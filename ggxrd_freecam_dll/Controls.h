@@ -28,7 +28,6 @@ private:
 	POINT setCursorToCenter();
 	std::mutex magnetCursorModeMutex;
 	bool magnetCursorMode = false;
-	std::chrono::steady_clock::time_point magnetCursorModeStartTime;
 
 	WndProc_t orig_WndProc = nullptr;
 	RecursiveMutex orig_WndProcMutex;

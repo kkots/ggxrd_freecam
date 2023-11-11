@@ -5,6 +5,7 @@
 #include <Windowsx.h>
 #include "logging.h"
 #include "Settings.h"
+#include <hidusage.h>
 
 using namespace std::literals;
 
@@ -92,9 +93,13 @@ void Controls::setCursorVisibilityHook(char* thisArg, BOOL isVisible) {
 void Controls::setMagnetCursorMode(HWND hWnd, bool isOn) {
 	if (lostFocus && isOn) return;
 	if (isOn && !magnetCursorMode) {
-		setCursorToCenter();
 		magnetCursorMode = true;
-		magnetCursorModeStartTime = std::chrono::steady_clock::now();
+		RAWINPUTDEVICE Rid[1];
+		Rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
+		Rid[0].usUsage = HID_USAGE_GENERIC_MOUSE;
+		Rid[0].dwFlags = RIDEV_INPUTSINK;
+		Rid[0].hwndTarget = hWnd;
+		RegisterRawInputDevices(Rid, 1, sizeof(Rid[0]));
 	}
 	else if (!isOn && magnetCursorMode) {
 		magnetCursorMode = false;
@@ -130,16 +135,23 @@ LRESULT Controls::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		inputData.wheelDelta += wheelDelta;
 		break;
 	}
-	case WM_MOUSEMOVE:
+	case WM_INPUT:
 	{
 		if (magnetCursorMode) {
-			std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
-			if (currentTime - magnetCursorModeStartTime > 100ms) {
-				POINT clientPnt = setCursorToCenter();
+			UINT dwSize = sizeof(RAWINPUT);
+			static BYTE lpb[sizeof(RAWINPUT)];
+			if (-1 == GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)))
+				break;
+			RAWINPUT* raw = (RAWINPUT*)lpb;
 
+			if (raw->header.dwType == RIM_TYPEMOUSE)
+			{
+				int xPosRelative = raw->data.mouse.lLastX;
+				int yPosRelative = raw->data.mouse.lLastY;
 				std::unique_lock<std::mutex> guard(inputDataMutex);
-				inputData.dx += GET_X_LPARAM(lParam) - clientPnt.x;
-				inputData.dy += GET_Y_LPARAM(lParam) - clientPnt.y;
+				inputData.dx += xPosRelative;
+				inputData.dy += yPosRelative;
+				setCursorToCenter();
 			}
 		}
 		break;
