@@ -7,6 +7,10 @@
 Allows to move camera freely in Guilty Gear Xrd Rev2 version 2211 (as of 11'th November 2023).  
 No controller support (I don't own a controller).
 
+## Credits
+
+Thanks to WorseThanYou for reworking the mouse controls so that they work with the Raw input API.
+
 ## System requirements
 
 Intel processor architecture x86 (32-bit) or x64 (64-bit) (AMD will work). Windows operating system.
