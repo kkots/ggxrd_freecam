@@ -8,12 +8,26 @@
 
 Camera camera;
 
-const unsigned int aswEngineCameraOffset = 0x22e62c;
 const unsigned int cameraCoordsStart = 0x3C0;
 const float coordCoefficient = 0.42960999705207F;
 
 bool Camera::onDllMain() {
 	bool error = false;
+
+	if (aswEngine) {
+		char cameraOffsetSig[] = "\x8b\x4c\x24\x18\x83\xc4\x08\x0b\x4c\x24\x14\x74\x1e\x8b\x15\x00\x00\x00\x00\x8b\x8a\x00\x00\x00\x00\xe8\x00\x00\x00\x00\x85\xc0\x75\x09\x55\xe8\x00\x00\x00\x00\x83\xc4\x04";
+		char cameraOffsetSigMask[] = "xxxxxxxxxxxxxxx????xx????x????xxxxxx????xxx";
+
+		substituteWildcard(cameraOffsetSigMask, cameraOffsetSig, (char*)&aswEngine, 4, 0);
+
+		cameraOffset = (unsigned int)sigscanOffset(
+			"GuiltyGearXrd.exe",
+			cameraOffsetSig,
+			cameraOffsetSigMask,
+			{ 0x15, 0 },
+			&error, "cameraOffset");
+
+	}
 
 	orig_updateCamera = (updateCamera_t)sigscanOffset(
 		"GuiltyGearXrd.exe",
@@ -50,7 +64,7 @@ void Camera::updateCameraHook(char* thisArg, char** param1, char* param2) {
 
 void Camera::updateCameraManually(CameraMoveInputs& inputs) {
 	if (!aswEngine || !*aswEngine) return;
-	char* camPtr = *(char**)(*aswEngine + aswEngineCameraOffset);
+	char* camPtr = *(char**)(*aswEngine + cameraOffset);
 	if (!camPtr) return;
 	CameraValues* cam = (CameraValues*)(camPtr + 0x384);
 	

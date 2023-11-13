@@ -30,6 +30,7 @@ private:
 	};
 	updateCamera_t orig_updateCamera = nullptr;
 	std::mutex orig_updateCameraMutex;
+	unsigned int cameraOffset = 0;
 	void anglesToDirections(int pitch, int yaw, int roll, Vector3& forward, Vector3& up, Vector3& left, Vector3& yawAxis) const;
 	void capAngle(int& angle);
 };
