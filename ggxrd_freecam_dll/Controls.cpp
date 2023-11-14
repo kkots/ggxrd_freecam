@@ -56,9 +56,8 @@ void Controls::onDllDetach() {
 }
 
 LRESULT CALLBACK Controls::WndProcStatic(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	++detouring.hooksCounter;
+	HookTracker hookTracker;
 	LRESULT result = controls.WndProc(hWnd, message, wParam, lParam);
-	--detouring.hooksCounter;
 	return result;
 }
 

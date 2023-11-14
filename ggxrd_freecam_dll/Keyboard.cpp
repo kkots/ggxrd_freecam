@@ -60,12 +60,15 @@ void Keyboard::beginUpdateStatuses() {
 bool Keyboard::combinationIsHeld(const KeyComboSet& keyCodes) {
 	if (keyCodes.empty()) return false;
 	for (const std::vector<int>& vec : keyCodes.data) {
+		bool checkFailed = false;
 		for (int code : vec) {
 			KeyStatus* found = getStatus(code);
-			if (!found) break;
-			if (!found->isPressed) break;
+			if (!found || !found->isPressed) {
+				checkFailed = true;
+				break;
+			}
 		}
-		return true;
+		if (!checkFailed) return true;
 	}
 	return false;
 }

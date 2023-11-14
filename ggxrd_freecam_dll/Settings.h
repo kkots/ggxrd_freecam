@@ -34,10 +34,14 @@ public:
 	KeyComboSet fovDecrease;
 	KeyComboSet fovIncrease;
 	KeyComboSet toggleHud;
+	KeyComboSet freezeGameToggle;
+	KeyComboSet slowmoGameToggle;
+	KeyComboSet allowNextFrame;
 	float lookaroundSpeedMultiplier = 1.F;
 	float movementSpeedMultiplier = 1.F;
 	float rollMultiplier = 1.F;
 	float fovChangeSpeedMultiplier = 1.F;
+	int slowmoTimes = 3;
 
 	MultiplicationTable table;
 private:
@@ -71,6 +75,7 @@ private:
 	std::string parseKeyName(const char* buf);
 	bool parseKeys(const char* keyName, std::string keyValue, KeyComboSet& keyCodes);
 	bool parseNumber(const char* keyName, std::string keyValue, float& number);
+	bool parseInteger(const char* keyName, std::string keyValue, int& integer);
 	std::string getKeyValue(const char* buf) const;
 	std::string toUppercase(std::string str) const;
 };

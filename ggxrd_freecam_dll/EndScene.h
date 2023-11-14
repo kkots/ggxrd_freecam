@@ -39,6 +39,9 @@ private:
 
 	std::vector<int> tempPressedKeys;
 	int hasBeenMovingFor = 0;
+	unsigned int allowNextFrameBeenHeldFor = 0;
+	unsigned int allowNextFrameCounter = 0;
+	bool freezeGame = false;
 };
 
 extern EndScene endScene;

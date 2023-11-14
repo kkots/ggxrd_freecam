@@ -166,12 +166,17 @@ void Settings::readSettings() {
 	addKeyComboToParse(keyCombosToParse, "fovDecrease", &fovDecrease, "MouseWheelUp");
 	addKeyComboToParse(keyCombosToParse, "fovIncrease", &fovIncrease, "MouseWheelDown");
 	addKeyComboToParse(keyCombosToParse, "toggleHud", &toggleHud, "F1");
+	addKeyComboToParse(keyCombosToParse, "freezeGameToggle", &freezeGameToggle, "F3");
+	addKeyComboToParse(keyCombosToParse, "slowmoGameToggle", &slowmoGameToggle, "F4");
+	addKeyComboToParse(keyCombosToParse, "allowNextFrame", &allowNextFrame, "F5");
 
 	std::map<std::string, NumberToParse> numbersToParse;
 	addNumberToParse(numbersToParse, "lookaroundSpeedMultiplier", &lookaroundSpeedMultiplier, 1.F);
 	addNumberToParse(numbersToParse, "movementSpeedMultiplier", &movementSpeedMultiplier, 1.F);
 	addNumberToParse(numbersToParse, "rollMultiplier", &movementSpeedMultiplier, 1.F);
 	addNumberToParse(numbersToParse, "fovChangeSpeedMultiplier", &fovChangeSpeedMultiplier, 1.F);
+
+	bool slowmoTimesParsed = false;
 
 	char errorString[500];
 	char buf[1024];
@@ -206,6 +211,9 @@ void Settings::readSettings() {
 				auto foundNumber = numbersToParse.find(keyNameUpper);
 				if (foundNumber != numbersToParse.end()) {
 					foundNumber->second.numberParsed = parseNumber(foundNumber->second.name.c_str(), keyValue, *foundNumber->second.number);
+				}
+				if (!slowmoTimesParsed && keyNameUpper == "SLOWMOTIMES") {
+					slowmoTimesParsed = parseInteger("slowmoTimes", keyValue, slowmoTimes);
 				}
 			}
 			if (feof(file)) break;
@@ -419,5 +427,13 @@ bool Settings::parseNumber(const char* keyName, std::string keyValue, float& num
 
 	logwrap(fprintf(logfile, "Parsed number for %s: %f\n", keyName, result));
 	number = result;
+	return true;
+}
+
+bool Settings::parseInteger(const char* keyName, std::string keyValue, int& integer) {
+	int result = std::atoi(keyValue.c_str());
+	if (result == 0 && keyValue != "0") return false;
+	integer = result;
+	logwrap(fprintf(logfile, "Parsed integer for %s: %d\n", keyName, integer));
 	return true;
 }

@@ -312,3 +312,10 @@ bool Detouring::someThreadsAreExecutingThisModule() {
 	closeAllThreadHandles();
 	return threadEipInThisModule;
 }
+
+HookTracker::HookTracker() {
+	++detouring.hooksCounter;
+}
+HookTracker::~HookTracker() {
+	--detouring.hooksCounter;
+}

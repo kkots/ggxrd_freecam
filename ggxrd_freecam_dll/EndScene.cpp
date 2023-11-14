@@ -39,7 +39,7 @@ bool EndScene::onDllMain() {
 }
 
 HRESULT __stdcall hook_EndScene(IDirect3DDevice9* device) {
-	++detouring.hooksCounter;
+	HookTracker hookTracker;
 	if (endScene.consumePresentFlag()) {
 
 		if (*aswEngine != nullptr) {
@@ -54,14 +54,12 @@ HRESULT __stdcall hook_EndScene(IDirect3DDevice9* device) {
 		std::unique_lock<std::mutex> guard(endScene.orig_EndSceneMutex);
 		result = endScene.orig_EndScene(device);
 	}
-	--detouring.hooksCounter;
 	return result;
 }
 
 HRESULT __stdcall hook_Present(IDirect3DDevice9* device, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion) {
-	++detouring.hooksCounter;
+	HookTracker hookTracker;
 	HRESULT result = endScene.presentHook(device, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-	--detouring.hooksCounter;
 	return result;
 }
 
@@ -131,6 +129,56 @@ bool EndScene::endSceneOnlyProcessKeys() {
 	}
 	if (!obtainedMagnetCursorModeValue) {
 		magnetCursorMode = controls.isMagnetCursorMode();
+	}
+
+	bool trainingMode = game.getGameMode() == GAME_MODE_TRAINING;
+	if (keyboard.combinationGotPressed(settings.freezeGameToggle)) {
+		if (freezeGame == true) {
+			freezeGame = false;
+			logwrap(fputs("Freeze game turned off\n", logfile));
+		}
+		else if (trainingMode) {
+			freezeGame = true;
+			logwrap(fputs("Freeze game turned on\n", logfile));
+		}
+	}
+	if (keyboard.combinationGotPressed(settings.slowmoGameToggle)) {
+		if (game.slowmoGame == true) {
+			game.slowmoGame = false;
+			logwrap(fputs("Slowmo game turned off\n", logfile));
+		}
+		else if (trainingMode) {
+			game.slowmoGame = true;
+			logwrap(fputs("Slowmo game turned on\n", logfile));
+		}
+	}
+	bool allowNextFrameIsHeld = keyboard.combinationIsHeld(settings.allowNextFrame);
+	if (allowNextFrameIsHeld) {
+		bool allowPress = false;
+		if (allowNextFrameBeenHeldFor == 0) {
+			allowPress = true;
+		}
+		else if (allowNextFrameBeenHeldFor >= 40) {
+			allowNextFrameBeenHeldFor = 40;
+			++allowNextFrameCounter;
+			if (allowNextFrameCounter >= 10) {
+				allowPress = true;
+				allowNextFrameCounter = 0;
+			}
+		}
+		if (trainingMode && allowPress) {
+			game.allowNextFrame = true;
+			logwrap(fputs("allowNextFrame pressed\n", logfile));
+		}
+		++allowNextFrameBeenHeldFor;
+	}
+	else {
+		allowNextFrameBeenHeldFor = 0;
+		allowNextFrameCounter = 0;
+	}
+	game.freezeGame = (allowNextFrameIsHeld || freezeGame) && trainingMode;
+	if (!trainingMode) {
+		game.slowmoGame = false;
 	}
 
 	return magnetCursorMode;

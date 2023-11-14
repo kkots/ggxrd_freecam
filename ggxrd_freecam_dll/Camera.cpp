@@ -47,9 +47,8 @@ bool Camera::onDllMain() {
 }
 
 void Camera::HookHelp::updateCameraHook(char** param1, char* param2) {
-	++detouring.hooksCounter;
+	HookTracker hookTracker;
 	camera.updateCameraHook((char*)this, param1, param2);
-	--detouring.hooksCounter;
 }
 
 float radius = 100;

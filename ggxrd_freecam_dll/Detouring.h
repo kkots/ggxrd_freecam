@@ -69,3 +69,9 @@ private:
 
 extern Detouring detouring;
 extern const char * DLL_NAME;
+
+class HookTracker {
+public:
+	HookTracker();
+	~HookTracker();
+};

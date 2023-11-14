@@ -1,10 +1,11 @@
 # ggxrd_freecam
 
-![Cannot display image](screen.png)
+![Cannot display image](screen.jpg)
 
 ## Description
 
 Allows to move camera freely in Guilty Gear Xrd Rev2 version 2211 (as of 11'th November 2023).  
+Also allows to play the game one frame at a time (only in training mode).  
 No controller support (I don't own a controller).
 
 ## Credits
@@ -21,8 +22,10 @@ Intel processor architecture x86 (32-bit) or x64 (64-bit) (AMD will work). Windo
 
 2. Launch `ggxrd_freecam_injector.exe`.
 
-3. Start a match. Freecam only works within matches, in training room, etc (also works while the game is paused).  
+3. Start a match. Freecam only works within matches, in training room, etc (also works while the game is paused using the game's built-in menu).  
    Left-click anywhere on the Guilty Gear's window and the camera should freeze. You can now move the camera freely (see `Controls` section). Left-click again and the camera should unfreeze. More in `Controls` section.
+
+4. To play the game frame-by-frame refer to `Frame-by-frame Controls` section.
 
 To turn off the mod you can launch `ggxrd_freecam_injector.exe` again.  
 If trying to use the mod with a game version that it doesn't fit, the game may crash. The mod should be possible to combine with other mods, but there might be some mods that can't be combined with this one (if they hook or sigscan the same functions).
@@ -49,7 +52,17 @@ While the freecam mode is on:
 * Mouse wheel up: decrease FOV (field of view). This makes everything bigger;
 * Mouse wheel down: increase FOV (field of view). This makes everything smaller;
 
-Controls can be configured: read on.
+Controls can be configured - more about that in `Controls configuration` section.
+
+### Frame-by-frame Controls
+
+The game can be played one frame at a time or in slow-motion mode. This is only allowed in training mode. Default controls are:
+
+* F3 - freeze/unfreeze the game. Freezes the game and stops animations and game logic from advancing.
+* F4 - toggle slow-motion mode.
+* F5 - advance to next frame. Use this while the game is frozen using F3.
+
+Controls can be configured - more about that in `Controls configuration` section.
 
 ### Controls configuration
 
@@ -111,6 +124,18 @@ rollMultiplier = 1.0
 
 ; Multiplier for FOV change speed (using fovIncrease/fovDecrease). Active always while changing FOV
 fovChangeSpeedMultiplier = 1.0
+
+; Freezes the game
+freezeGameToggle = F3
+
+; Plays the game in slow motion. Specifies by how many times to slow the game down in "slowmoTimes"
+slowmoGameToggle = F4
+
+; Only works while the game is frozen using freezeGameToggle. Advances the game forward one frame
+allowNextFrameKeyCombo = F5
+
+; This works in conjunction with slowmoGameToggle. Only round numbers greater than 1 allowed. Specifies by how many times to slow the game down
+slowmoTimes = 3
 ```
 
 You can specify a combination of keys and/or mouse buttons, separated by `+` sign.  
