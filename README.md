@@ -6,6 +6,7 @@
 
 Allows to move camera freely in Guilty Gear Xrd Rev2 version 2211 (as of 20'th November 2023).  
 Also allows to play the game one frame at a time (only in training mode).  
+Also allows to take screenshots of the game with transparency.  
 No controller support (I don't own a controller).
 
 ## Credits
@@ -14,7 +15,8 @@ Thanks to WorseThanYou for reworking the mouse controls so that they work with t
 
 ## System requirements
 
-Intel processor architecture x86 (32-bit) or x64 (64-bit) (AMD will work). Windows operating system.
+Intel processor architecture x86 (32-bit) or x64 (64-bit) (AMD will work). Windows operating system.  
+May work on Ubuntu/Linux running GGXrd under Steam Proton.
 
 ## Quickstart
 
