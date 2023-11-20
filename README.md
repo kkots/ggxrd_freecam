@@ -309,7 +309,7 @@ dontUseScreenshotTransparency = false
 
 You can specify a combination of keys and/or mouse buttons, separated by `+` sign. ; You can assign same key to multiple features - it will toggle/set in motion all of them simultaneously.  
 Only the following key names are allowed: Backspace, Tab, Enter, PauseBreak, CapsLock, Escape, Space, PageUp, PageDown, End, Home, ArrowLeft, ArrowUp, ArrowRight, ArrowDown, PrintScreen, Insert Delete, Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9, NumMultiply, NumAdd, NumSubtract, NumDecimal, NumDivide, F1, F2, F3, F4, F, F6, F7, F8, F9, F10, F11, F12, NumLock, ScrollLock, Colon, Plus, Minus, Comma, Period, Slash, Tilde, OpenSquareBracket, Backslash, CloseSquareBracket, Quote, Backslash2, LeftClick, RightClick, MiddleClick, MouseMoveLeft, MouseMoveUp, MouseMoveRight, MouseMoveDown, MouseWheelUp, MouseWheelDown, 0123456789, ABCDEFGHIJKLMNOPQRSTUVWXYZ, Shift, Ctrl, Alt.  
-If the mod is already running you need to reload it in order to apply the new controls. To reload the mod you can run the injector again.
+You don't need to reload the mod when you change this file - it re-reads this settings file automatically when it changes.
 
 ## Build instructions
 
