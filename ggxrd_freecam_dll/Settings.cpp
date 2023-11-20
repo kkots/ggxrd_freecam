@@ -488,6 +488,9 @@ bool Settings::parseNumber(const char* keyName, std::string keyValue, float& num
 
 bool Settings::parseInteger(const char* keyName, const std::string& keyValue, int& integer) {
 	if (keyValue.empty()) return false;
+	for (auto it = keyValue.begin(); it != keyValue.end(); ++it) {
+		if (!(*it >= '0' && *it <= '9')) return false;  // apparently atoi doesn't do this check
+	}
 	int result = std::atoi(keyValue.c_str());
 	if (result == 0 && keyValue != "0") return false;
 	integer = result;
