@@ -223,7 +223,7 @@ toggleHud = F1
 blackBackgroundToggle = F2
 
 ; Hide all entities belonging to one of the fighting sides. This can't hide the tension/burst lightning.
-; You can specify which exact side to hide using the opponentSide setting.
+; You can specify which exact side to hide using the sideToHide setting.
 ; This makes the hidden opponent somewhat invincible to all attacks except lows
 hideOneOfTheSidesToggle = 
 
@@ -260,7 +260,7 @@ slowmoTimes = 3
 ; Convenient for turning the mod on after you've started the game with the mod turned off (see startDisabled)
 disableModToggle = 
 
-; Settings this to true makes the mod load initially in a disabled state, when none of its features,
+; Setting this to true makes the mod load initially in a disabled state, when none of its features,
 ; besides turning on the mod with the disableModToggle, work
 startDisabled = false
 
@@ -313,17 +313,21 @@ You don't need to reload the mod when you change this file - it re-reads this se
 
 ## Build instructions
 
-There are two separate projects in the solution.
+There are multiple separate projects in the solution.
 
 The `ggxrd_freecam_injector` project builds an application that will inject a dll into the process and exit. The main action will then take place in the dll, in the target process' address space.
 
 The `ggxrd_freecam_dll` project builds the dll that's responsible for the freecam functionality.
 
-Both applications need to be compiled as 32-bit (x86) projects. Open the `.sln` file, which is located in the root of the repository, using Visual Studio (I'm using 2022 Community Edition). In the top bar select `Release` and `x86`.
+The `ggxrd_freecam_patcher` project is cross-platform for Windows and Ubuntu/Linux and patches the GuiltyGearXrd.exe executable so that it launches the mod's overlay DLL on startup. This is needed because injector doesn't work on Ubuntu/Linux or to make the game always start with the mod on Windows.
+
+All applications need to be compiled as 32-bit (x86) projects. Open the `.sln` file, which is located in the root of the repository, using Visual Studio (I'm using 2022 Community Edition). In the top bar select `Release` and `x86`.
 
 The dll project must be compiled with UNICODE unset. Right-click the `ggxrd_freecam_dll` project in `Solution Explorer` and go to `Properties` -> `Advanced` -> `Character Set`. Select `Use Multi-Byte Character Set`. This setting is set separately for each `Release` + `x86` combination so it might change after changing the target platform.
 
 The injector project must be compiled with UNICODE to support multi-language directory paths. Right-click the `ggxrd_freecam_injector` project in `Solution Explorer` and go to `Properties` -> `Advanced` -> `Character Set`. Select `Use Unicode Character Set`.
+
+The patcher project does not care about the UNICODE setting.
 
 Add dependencies to the dll project: read below.
 
