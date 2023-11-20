@@ -226,10 +226,12 @@ bool EndScene::endSceneOnlyProcessKeys() {
 	if (!modDisabled && keyboard.combinationGotPressed(settings.hideOneOfTheSidesToggle)) {
 		if (hideOpponent) {
 			hideOpponent = false;
+			game.everyoneInvulnerable = false;
 			logwrap(fputs("Hide opponent off\n", logfile));
 		}
 		else if (trainingMode || replayMode) {
 			hideOpponent = true;
+			game.everyoneInvulnerable = true;
 			logwrap(fputs("Hide opponent on\n", logfile));
 		}
 	}
@@ -247,10 +249,12 @@ bool EndScene::endSceneOnlyProcessKeys() {
 		hud.hideHudMode = false;
 		freezeGame = false;
 		hideOpponent = false;
+		game.everyoneInvulnerable = false;
 	}
 	if (!trainingMode && !replayMode) {
 		camera.darkenMode = false;
 		hideOpponent = false;
+		game.everyoneInvulnerable = false;
 	}
 
 	return magnetCursorMode;

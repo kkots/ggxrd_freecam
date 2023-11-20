@@ -224,7 +224,7 @@ blackBackgroundToggle = F2
 
 ; Hide all entities belonging to one of the fighting sides. This can't hide the tension/burst lightning.
 ; You can specify which exact side to hide using the sideToHide setting.
-; This makes the hidden opponent somewhat invincible to all attacks except lows
+; Everyone and everything also become invulnerable to all attacks
 hideOneOfTheSidesToggle = 
 
 ; This specifies which side to hide using hideOneOfTheSidesToggle. Specify 0 here for Player 1 Side
@@ -361,3 +361,4 @@ After setting UNICODE support correctly and adding dependencies you can build th
 ## Changelog
 
 - 20'th November 2023 - added transparent/non-transparent screenshotting.
+- 20'th November 2023 - made full invulnerability of everyone to everything when `hideOneOfTheSidesToggle` is used.

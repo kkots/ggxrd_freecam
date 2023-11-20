@@ -32,6 +32,20 @@ bool Game::onDllMain() {
 		hookFrameByFraming();
 	}
 
+	orig_determineHitType = (determineHitType_t)sigscanOffset(
+		"GuiltyGearXrd.exe",
+		"\x55\x8b\xec\x83\xe4\xf8\x81\xec\x54\x02\x00\x00\xa1\x00\x00\x00\x00\x33\xc4\x89\x84\x24\x50\x02\x00\x00\x8b\x45\x10\x53\x56\x8b\x75\x08\x8b\x5e\x10\xf7\xdb\x57\x8b\xf9\x1b\xdb\x23\xde\xf6\x87\x64\x04\x00\x00\x02",
+		"xxxxxxxxxxxxx????xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+		nullptr, "determineHitType");
+
+	if (orig_determineHitType) {
+		int(HookHelp::*determineHitTypeHookPtr)(void*, BOOL, unsigned int*, unsigned int*) = &HookHelp::determineHitTypeHook;
+		detouring.attach(&(PVOID&)(orig_determineHitType),
+			(PVOID&)determineHitTypeHookPtr,
+			&orig_determineHitTypeMutex,
+			"determineHitType");
+	}
+
 	return !error;
 }
 
@@ -175,4 +189,20 @@ void Game::gameLoopHookEmpty() {
 	if (getTrainingHudArgument) {
 		trainingHudTick(getTrainingHudArgument());
 	}
+}
+
+/* 0 means no hit
+   1 is get hit (including by all throws)
+   2 is blocked hit
+   3 is ignoring hit due to playing a possibly very long throw animation (dunno why that is separate)
+   4 is rejected hit */
+int Game::HookHelp::determineHitTypeHook(void* defender, BOOL wasItType10Hitbox, unsigned int* param3, unsigned int* hpPtr) {
+	HookTracker hookTracker;
+	int result;
+	{
+		std::unique_lock<std::mutex> guard(game.orig_determineHitTypeMutex);
+		result = game.orig_determineHitType(this, defender, wasItType10Hitbox, param3, hpPtr);
+	}
+	if (!game.everyoneInvulnerable) return result;
+	return 0;
 }

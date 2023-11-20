@@ -2,6 +2,8 @@
 #include "gameModes.h"
 #include <mutex>
 
+using determineHitType_t = int(__thiscall*)(void*, void*, BOOL, unsigned int*, unsigned int*);
+
 extern const char** aswEngine;
 
 using gameLoop_t = void(__cdecl*)(int param1, int param2, int param3, int param4);
@@ -19,10 +21,14 @@ public:
 	bool freezeGame = false;
 	bool slowmoGame = false;
 	bool allowNextFrame = false;
+	determineHitType_t orig_determineHitType = nullptr;
+	std::mutex orig_determineHitTypeMutex;
+	bool everyoneInvulnerable = false;
 private:
 	class HookHelp {
 		friend class Game;
 		void actualGameLoopHook(int param1);
+		int determineHitTypeHook(void* defender, BOOL wasItType10Hitbox, unsigned int* param3, unsigned int* hpPtr);
 	};
 	bool sigscanFrameByFraming();
 	void hookFrameByFraming();
