@@ -6,6 +6,7 @@ struct KeyComboSet {
 	void insert(int code);
 	void endInsert();
 	bool empty() const;
+	void clear();
 private:
 	bool insertJustBegan = false;
 	bool insertModeOn = false;

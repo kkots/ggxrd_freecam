@@ -24,3 +24,9 @@ void KeyComboSet::insert(int code) {
 	if (data.empty()) return;
 	data.back().push_back(code);
 }
+
+void KeyComboSet::clear() {
+	data.clear();
+	insertModeOn = false;
+	insertJustBegan = false;
+}

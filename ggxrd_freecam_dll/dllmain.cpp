@@ -53,12 +53,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         if (!controls.onDllMain()) break;
         if (!detouring.endTransaction()) break;
 
-        return TRUE;
+        break;
     }
     case DLL_THREAD_ATTACH:
-        return TRUE;
+        break;
     case DLL_THREAD_DETACH:
-        return TRUE;
+        break;
     case DLL_PROCESS_DETACH: {
         logwrap(fputs("DLL_PROCESS_DETACH\n", logfile));
         detouring.dllMainThreadId = GetCurrentThreadId();
@@ -68,9 +68,11 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         while (detouring.someThreadsAreExecutingThisModule()) Sleep(100);
         hud.onDllDetach();
         controls.onDllDetach();
-        return TRUE;
+        settings.onDllDetach();
+        break;
     }
     }
+    detouring.cancelTransaction();
     return TRUE;
 }
 

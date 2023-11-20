@@ -84,6 +84,15 @@
     <ClInclude Include="KeyComboSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EntityList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Screenshotting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PngRelated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -139,6 +148,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KeyComboSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Screenshotting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PngRelated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -11,6 +11,8 @@
 #include "Hud.h"
 #include "Keyboard.h"
 #include "Settings.h"
+#include "EntityList.h"
+#include "Screenshotting.h"
 
 EndScene endScene;
 
@@ -47,6 +49,7 @@ HRESULT __stdcall hook_EndScene(IDirect3DDevice9* device) {
 		} else {
 			endScene.endSceneOnlyProcessKeys();
 			endScene.finishProcessingKeys();
+			endScene.clearContinuousScreenshotMode();
 		}
 	}
 	HRESULT result;
@@ -81,25 +84,26 @@ void EndScene::setPresentFlag() {
 }
 
 bool EndScene::endSceneOnlyProcessKeys() {
+	settings.readSettingsIfChanged();	
 	keyboard.beginUpdateStatuses();
 	controls.getInputData(inputData);
 	if (inputData.dx > 0) {
-		tempPressAKey(MOUSE_MOVE_RIGHT);
+		tempPressKey(MOUSE_MOVE_RIGHT);
 	}
 	if (inputData.dx < 0) {
-		tempPressAKey(MOUSE_MOVE_LEFT);
+		tempPressKey(MOUSE_MOVE_LEFT);
 	}
 	if (inputData.dy > 0) {
-		tempPressAKey(MOUSE_MOVE_DOWN);
+		tempPressKey(MOUSE_MOVE_DOWN);
 	}
 	if (inputData.dy < 0) {
-		tempPressAKey(MOUSE_MOVE_UP);
+		tempPressKey(MOUSE_MOVE_UP);
 	}
 	if (inputData.wheelDelta > 0) {
-		tempPressAKey(MOUSE_WHEEL_UP);
+		tempPressKey(MOUSE_WHEEL_UP);
 	}
 	if (inputData.wheelDelta < 0) {
-		tempPressAKey(MOUSE_WHEEL_DOWN);
+		tempPressKey(MOUSE_WHEEL_DOWN);
 	}
 	for (auto it = inputData.keyInputs.begin(); it != inputData.keyInputs.end(); ++it) {
 		if (it->type == KEY_INPUT_TYPE_PRESSED) {
@@ -110,18 +114,27 @@ bool EndScene::endSceneOnlyProcessKeys() {
 		}
 	}
 
-	if (keyboard.combinationGotPressed(settings.toggleHud)) {
+	bool obtainedMagnetCursorModeValue = false;
+	if (keyboard.combinationGotPressed(settings.disableModToggle)) {
+		if (!modDisabled) {
+			modDisabled = true;
+			logwrap(fputs("Mod disabled\n", logfile));
+		} else {
+			modDisabled = false;
+			logwrap(fputs("Mod enabled\n", logfile));
+		}
+	}
+	if (!modDisabled && keyboard.combinationGotPressed(settings.toggleHud)) {
 		hud.hideHudMode = !hud.hideHudMode;
 		logwrap(fprintf(logfile, "Pressed toggleHud. hideHudMode is %d\n", (int)hud.hideHudMode));
 	}
-	bool obtainedMagnetCursorModeValue = false;
-	if (keyboard.combinationGotPressed(settings.toggleFreecamButLeaveLocked)) {
+	if (!modDisabled && keyboard.combinationGotPressed(settings.toggleFreecamButLeaveLocked)) {
 		camera.isFreecamMode = true;
 		magnetCursorMode = controls.toggleMagnetCursorMode();
 		obtainedMagnetCursorModeValue = true;
 		logwrap(fprintf(logfile, "Pressed toggleFreecamButLeaveLocked. magnetCursorMode is %d\n", (int)magnetCursorMode));
 	}
-	if (keyboard.combinationGotPressed(settings.toggleFreecam)) {
+	if (!modDisabled && keyboard.combinationGotPressed(settings.toggleFreecam)) {
 		magnetCursorMode = controls.toggleMagnetCursorMode();
 		obtainedMagnetCursorModeValue = true;
 		camera.isFreecamMode = magnetCursorMode;
@@ -131,8 +144,10 @@ bool EndScene::endSceneOnlyProcessKeys() {
 		magnetCursorMode = controls.isMagnetCursorMode();
 	}
 
-	bool trainingMode = game.getGameMode() == GAME_MODE_TRAINING;
-	if (keyboard.combinationGotPressed(settings.freezeGameToggle)) {
+	GameMode gameMode = game.getGameMode();
+	bool trainingMode = gameMode == GAME_MODE_TRAINING;
+	bool replayMode = gameMode == GAME_MODE_REPLAY;
+	if (!modDisabled && keyboard.combinationGotPressed(settings.freezeGameToggle)) {
 		if (freezeGame == true) {
 			freezeGame = false;
 			logwrap(fputs("Freeze game turned off\n", logfile));
@@ -142,7 +157,7 @@ bool EndScene::endSceneOnlyProcessKeys() {
 			logwrap(fputs("Freeze game turned on\n", logfile));
 		}
 	}
-	if (keyboard.combinationGotPressed(settings.slowmoGameToggle)) {
+	if (!modDisabled && keyboard.combinationGotPressed(settings.slowmoGameToggle)) {
 		if (game.slowmoGame == true) {
 			game.slowmoGame = false;
 			logwrap(fputs("Slowmo game turned off\n", logfile));
@@ -152,7 +167,7 @@ bool EndScene::endSceneOnlyProcessKeys() {
 			logwrap(fputs("Slowmo game turned on\n", logfile));
 		}
 	}
-	bool allowNextFrameIsHeld = keyboard.combinationIsHeld(settings.allowNextFrame);
+	bool allowNextFrameIsHeld = !modDisabled && keyboard.combinationIsHeld(settings.allowNextFrame);
 	if (allowNextFrameIsHeld) {
 		bool allowPress = false;
 		if (allowNextFrameBeenHeldFor == 0) {
@@ -176,9 +191,66 @@ bool EndScene::endSceneOnlyProcessKeys() {
 		allowNextFrameBeenHeldFor = 0;
 		allowNextFrameCounter = 0;
 	}
-	game.freezeGame = (allowNextFrameIsHeld || freezeGame) && trainingMode;
-	if (!trainingMode) {
+	needToTakeScreenshot = false;
+	if (!modDisabled && keyboard.combinationGotPressed(settings.screenshotBtn)) {
+		needToTakeScreenshot = true;
+	}
+	if (!modDisabled && keyboard.combinationGotPressed(settings.continuousScreenshotToggle)) {
+		if (continuousScreenshotMode) {
+			continuousScreenshotMode = false;
+			logwrap(fputs("Continuous screenshot mode off\n", logfile));
+		}
+		else if (trainingMode) {
+			continuousScreenshotMode = true;
+			logwrap(fputs("Continuous screenshot mode on\n", logfile));
+		}
+	}
+	needContinuouslyTakeScreens = false;
+	if (!modDisabled
+			&& (keyboard.combinationIsHeld(settings.screenshotBtn) && settings.allowContinuousScreenshotting || continuousScreenshotMode)
+			&& *aswEngine
+			&& trainingMode
+			&& !settings.screenshotPath.empty()) {
+		needContinuouslyTakeScreens = true;
+	}
+	if (!modDisabled && keyboard.combinationGotPressed(settings.blackBackgroundToggle)) {
+		if (camera.darkenMode) {
+			camera.darkenMode = false;
+			logwrap(fputs("Darken mode off\n", logfile));
+		}
+		else if (trainingMode || replayMode) {
+			camera.darkenMode = true;
+			logwrap(fputs("Darken mode on\n", logfile));
+		}
+	}
+	if (!modDisabled && keyboard.combinationGotPressed(settings.hideOneOfTheSidesToggle)) {
+		if (hideOpponent) {
+			hideOpponent = false;
+			logwrap(fputs("Hide opponent off\n", logfile));
+		}
+		else if (trainingMode || replayMode) {
+			hideOpponent = true;
+			logwrap(fputs("Hide opponent on\n", logfile));
+		}
+	}
+	game.freezeGame = (allowNextFrameIsHeld || freezeGame) && trainingMode && !modDisabled;
+	if (!trainingMode || modDisabled) {
 		game.slowmoGame = false;
+	}
+	if (modDisabled) {
+		clearContinuousScreenshotMode();
+		if (magnetCursorMode) {
+			magnetCursorMode = controls.toggleMagnetCursorMode();
+		}
+		camera.isFreecamMode = false;
+		camera.darkenMode = false;
+		hud.hideHudMode = false;
+		freezeGame = false;
+		hideOpponent = false;
+	}
+	if (!trainingMode && !replayMode) {
+		camera.darkenMode = false;
+		hideOpponent = false;
 	}
 
 	return magnetCursorMode;
@@ -205,7 +277,6 @@ void EndScene::endSceneHook(IDirect3DDevice9* device) {
 		cameraInputs.cameraMoveDownSpeed = keyboard.calculateCombinationSpeed(settings.moveCameraDown, inputData, MULTIPLICATION_GOAL_CAMERA_MOVE) * settings.movementSpeedMultiplier;
 		cameraInputs.decreaseFovSpeed = keyboard.calculateCombinationSpeed(settings.fovDecrease, inputData, MULTIPLICATION_GOAL_CHANGE_FOV) * settings.fovChangeSpeedMultiplier;
 		cameraInputs.increaseFovSpeed = keyboard.calculateCombinationSpeed(settings.fovIncrease, inputData, MULTIPLICATION_GOAL_CHANGE_FOV) * settings.fovChangeSpeedMultiplier;
-		logwrap(fprintf(logfile, "increaseFovSpeed: %f, settings.fovChangeSpeedMultiplier: %f\n", cameraInputs.increaseFovSpeed, settings.fovChangeSpeedMultiplier));
 		
 		bool isMoving = cameraInputs.cameraMoveForwardSpeed != 0.F
 			|| cameraInputs.cameraMoveBackwardsSpeed != 0.F
@@ -237,8 +308,45 @@ void EndScene::endSceneHook(IDirect3DDevice9* device) {
 		hasBeenMovingFor = 0;
 	}
 	hud.changeHudVisibility(!hud.hideHudMode);
-
 	finishProcessingKeys();
+
+	entityList.populate();
+
+	noGravGifMode();
+
+	bool frameHasChanged = false;
+	unsigned int p1CurrentTimer = ~0;
+	unsigned int p2CurrentTimer = ~0;
+	if (!modDisabled) {
+		if (entityList.count >= 1) {
+			p1CurrentTimer = *(unsigned int*)(entityList.slots[0] + 0x130);
+		}
+		if (entityList.count >= 2) {
+			p2CurrentTimer = *(unsigned int*)(entityList.slots[1] + 0x130);
+		}
+		if (p1CurrentTimer != p1PreviousTimeOfTakingScreen
+				|| p2CurrentTimer != p2PreviousTimeOfTakingScreen) {
+			frameHasChanged = true;
+		}
+		if (needContinuouslyTakeScreens) {
+			if (frameHasChanged) {
+				needToTakeScreenshot = true;
+			}
+			p1PreviousTimeOfTakingScreen = p1CurrentTimer;
+			p2PreviousTimeOfTakingScreen = p2CurrentTimer;
+		}
+		else if (frameHasChanged) {
+			p1PreviousTimeOfTakingScreen = ~0;
+			p2PreviousTimeOfTakingScreen = ~0;
+		}
+	} else {
+		p1PreviousTimeOfTakingScreen = ~0;
+		p2PreviousTimeOfTakingScreen = ~0;
+	}
+
+	if (!modDisabled && needToTakeScreenshot) {
+		screenshotting.takeScreenshot(device);
+	}
 
 #ifdef LOG_PATH
 	didWriteOnce = true;
@@ -250,7 +358,7 @@ void EndScene::finishProcessingKeys() {
 	inputData.clear();
 }
 
-void EndScene::tempPressAKey(int code) {
+void EndScene::tempPressKey(int code) {
 	tempPressedKeys.push_back(code);
 	keyboard.pressKey(code);
 }
@@ -260,4 +368,111 @@ void EndScene::releaseTempKeys() {
 		keyboard.releaseKey(code);
 	}
 	tempPressedKeys.clear();
+}
+
+void EndScene::clearContinuousScreenshotMode() {
+	continuousScreenshotMode = false;
+	p1PreviousTimeOfTakingScreen = ~0;
+	p2PreviousTimeOfTakingScreen = ~0;
+}
+
+void EndScene::noGravGifMode() {
+	char sideToHide;
+	GameMode gameMode = game.getGameMode();
+	bool trainingMode = gameMode == GAME_MODE_TRAINING;
+	bool replayMode = gameMode == GAME_MODE_REPLAY;
+	sideToHide = settings.sideToHide;
+	if (sideToHide != 0 && sideToHide != 1) sideToHide = 1;
+
+	bool useGifMode = hideOpponent && (trainingMode || replayMode) && !modDisabled;
+	if (useGifMode) {
+		for (auto it = hiddenEntities.begin(); it != hiddenEntities.end(); ++it) {
+			it->wasFoundOnThisFrame = false;
+		}
+		for (int i = 0; i < entityList.count; ++i) {
+			char* ent = entityList.list[i];
+			if (*(char*)(ent + 0x40) == sideToHide) {
+				const int currentScaleX = *(int*)(ent + 0x264);
+				const int currentScaleY = *(int*)(ent + 0x268);
+				const int currentScaleZ = *(int*)(ent + 0x26C);
+				const int currentScaleDefault = *(int*)(ent + 0x2594);
+
+				auto found = findHiddenEntity(ent);
+				if (found == hiddenEntities.end()) {
+					hiddenEntities.emplace_back();
+					HiddenEntity& hiddenEntity = hiddenEntities.back();
+					hiddenEntity.ent = ent;
+					hiddenEntity.scaleX = currentScaleX;
+					hiddenEntity.scaleY = currentScaleY;
+					hiddenEntity.scaleZ = currentScaleZ;
+					hiddenEntity.scaleDefault = currentScaleDefault;
+					hiddenEntity.wasFoundOnThisFrame = true;
+				}
+				else {
+					HiddenEntity& hiddenEntity = *found;
+					if (currentScaleX != 0) {
+						hiddenEntity.scaleX = currentScaleX;
+					}
+					if (currentScaleY != 0) {
+						hiddenEntity.scaleY = currentScaleY;
+					}
+					if (currentScaleZ != 0) {
+						hiddenEntity.scaleZ = currentScaleZ;
+					}
+					if (currentScaleDefault != 0) {
+						hiddenEntity.scaleDefault = currentScaleDefault;
+					}
+					hiddenEntity.wasFoundOnThisFrame = true;
+				}
+				*(int*)(ent + 0x264) = 0;
+				*(int*)(ent + 0x268) = 0;
+				*(int*)(ent + 0x26C) = 0;
+				*(int*)(ent + 0x2594) = 0;
+			}
+		}
+		auto it = hiddenEntities.begin();
+		while (it != hiddenEntities.end()) {
+			if (!it->wasFoundOnThisFrame) {
+				hiddenEntities.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < entityList.count; ++i) {
+			char* ent = entityList.list[i];
+			auto found = findHiddenEntity(ent);
+			if (found != hiddenEntities.end()) {
+				const int currentScaleX = *(int*)(ent + 0x264);
+				const int currentScaleY = *(int*)(ent + 0x268);
+				const int currentScaleZ = *(int*)(ent + 0x26C);
+				const int currentScaleDefault = *(int*)(ent + 0x2594);
+
+				if (currentScaleX == 0) {
+					*(int*)(ent + 0x264) = found->scaleX;
+				}
+				if (currentScaleY == 0) {
+					*(int*)(ent + 0x268) = found->scaleY;
+				}
+				if (currentScaleZ == 0) {
+					*(int*)(ent + 0x26C) = found->scaleZ;
+				}
+				if (currentScaleDefault == 0) {
+					*(int*)(ent + 0x2594) = found->scaleDefault;
+				}
+			}
+		}
+		hiddenEntities.clear();
+	}
+}
+
+std::vector<EndScene::HiddenEntity>::iterator EndScene::findHiddenEntity(char* ent) {
+	for (auto it = hiddenEntities.begin(); it != hiddenEntities.end(); ++it) {
+		if (it->ent == ent) {
+			return it;
+		}
+	}
+	return hiddenEntities.end();
 }

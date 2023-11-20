@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ggxrd_freecam_dll", "ggxrd_
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ggxrd_freecam_injector", "ggxrd_freecam_injector\ggxrd_freecam_injector.vcxproj", "{6FA2A7B9-672D-4576-A718-45661FA088A4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ggxrd_freecam_patcher", "ggxrd_freecam_patcher\ggxrd_freecam_patcher.vcxproj", "{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{6FA2A7B9-672D-4576-A718-45661FA088A4}.Release|x64.Build.0 = Release|x64
 		{6FA2A7B9-672D-4576-A718-45661FA088A4}.Release|x86.ActiveCfg = Release|Win32
 		{6FA2A7B9-672D-4576-A718-45661FA088A4}.Release|x86.Build.0 = Release|Win32
+		{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}.Debug|x64.ActiveCfg = Debug|x64
+		{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}.Debug|x64.Build.0 = Debug|x64
+		{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}.Debug|x86.ActiveCfg = Debug|Win32
+		{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}.Debug|x86.Build.0 = Debug|Win32
+		{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}.Release|x64.ActiveCfg = Release|x64
+		{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}.Release|x64.Build.0 = Release|x64
+		{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}.Release|x86.ActiveCfg = Release|Win32
+		{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

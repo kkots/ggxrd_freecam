@@ -43,6 +43,23 @@ bool Camera::onDllMain() {
 			"updateCamera");
 	}
 
+	orig_updateDarken = (updateDarken_t)sigscanOffset(
+		"GuiltyGearXrd.exe",
+		"\x51\x56\x8b\xf1\x83\xbe\x00\x00\x00\x00\x00\x74\x12\xf3\x0f\x10\x86\x00\x00\x00\x00\xf3\x0f\x5c\x86\x00\x00\x00\x00\xeb\x10\xf3\x0f\x10\x86\x00\x00\x00\x00\xf3\x0f\x58\x86\x00\x00\x00\x00\x0f\x28\xc8\xf3\x0f\x11\x86\x00\x00\x00\x00",
+		"xxxxxx????xxxxxxx????xxxx????xxxxxx????xxxx????xxxxxxx????",
+		nullptr, "updateDarken");
+
+	if (orig_updateDarken) {
+
+		darkenValue1Offset = *(unsigned int*)((char*)orig_updateDarken + 17);
+
+		void(HookHelp::*updateDarkenHookPtr)() = &HookHelp::updateDarkenHook;
+		detouring.attach(&(PVOID&)(orig_updateDarken),
+			(PVOID&)updateDarkenHookPtr,
+			&orig_updateDarkenMutex,
+			"updateDarken");
+	}
+
 	return !error;
 }
 
@@ -51,14 +68,25 @@ void Camera::HookHelp::updateCameraHook(char** param1, char* param2) {
 	camera.updateCameraHook((char*)this, param1, param2);
 }
 
-float radius = 100;
-int angle = 0;
+void Camera::HookHelp::updateDarkenHook() {
+	HookTracker hookTracker;
+	camera.updateDarkenHook((char*)this);
+}
 
 void Camera::updateCameraHook(char* thisArg, char** param1, char* param2) {
 	if (!isFreecamMode) {
 		std::unique_lock<std::mutex> guard(orig_updateCameraMutex);
 		orig_updateCamera(thisArg, param1, param2);
 	}
+}
+
+void Camera::updateDarkenHook(char* thisArg) {
+	if (darkenMode) {
+		*(float*)(thisArg + darkenValue1Offset) = -1.F;
+		*(float*)(thisArg + darkenValue1Offset + 0xC) = 0.F;
+	}
+	std::unique_lock<std::mutex> guard(orig_updateDarkenMutex);
+	orig_updateDarken(thisArg);
 }
 
 void Camera::updateCameraManually(CameraMoveInputs& inputs) {

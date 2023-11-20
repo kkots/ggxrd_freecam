@@ -3,13 +3,13 @@
 #include "logging.h"
 #include "Keyboard.h"
 #include <stdexcept>
+#include "EndScene.h"
+#include "WinError.h"
 #ifdef LOG_PATH
 #include <list>
 #endif
 
 Settings settings;
-
-const wchar_t* INI_FILE_NAME = L"ggxrd_freecam.ini";
 
 bool Settings::onDllMain() {
 	addKey("Backspace", VK_BACK);
@@ -88,8 +88,6 @@ bool Settings::onDllMain() {
 	addKey("Ctrl", VK_CONTROL);
 	addKey("Alt", VK_MENU);
 
-	readSettings();
-
 	table.set(MULTIPLICATION_WHAT_MOUSE, MULTIPLICATION_GOAL_LOOK, 35.F);
 	table.set(MULTIPLICATION_WHAT_MOUSE, MULTIPLICATION_GOAL_ROLL, 35.F);
 	table.set(MULTIPLICATION_WHAT_KEYBOARD, MULTIPLICATION_GOAL_LOOK, 100.F);
@@ -103,7 +101,30 @@ bool Settings::onDllMain() {
 
 	table.set(MULTIPLICATION_WHAT_WHEEL, MULTIPLICATION_GOAL_CHANGE_FOV, 0.04F);
 
+	std::wstring currentDir = getCurrentDirectory();
+	settingsPath = currentDir + L"\\ggxrd_freecam.ini";
+	logwrap(fprintf(logfile, "INI file path: %ls\n", settingsPath.c_str()));
+
+
+	directoryChangeHandle = FindFirstChangeNotificationW(
+		currentDir.c_str(), // directory to watch 
+		FALSE,              // do not watch subtree 
+		FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE); // watch file name changes and last write date changes
+	if (directoryChangeHandle == INVALID_HANDLE_VALUE || !directoryChangeHandle) {
+		WinError winErr;
+		logwrap(fprintf(logfile, "FindFirstChangeNotificationW failed: %s\n", winErr.getMessage()));
+		directoryChangeHandle = NULL;
+	}
+
+	readSettings();
+
 	return true;
+}
+
+void Settings::onDllDetach() {
+	if (directoryChangeHandle) {
+		FindCloseChangeNotification(directoryChangeHandle);
+	}
 }
 
 void Settings::addKey(std::string name, int code) {
@@ -117,30 +138,6 @@ void Settings::addKeyRange(char start, char end) {
 		keys.insert({newName, {newName, c}});
 	}
 }
-
-// controls:
-// toggle freecam
-// toggle freecam but leave locked
-// move camera forward
-// move camera backwards
-// move camera right
-// move camera left
-// move camera up
-// move camera down
-// look up
-// look down
-// look right
-// look left
-// roll right
-// roll left
-// reset roll
-// fov increase
-// fov decrease
-// toggleHud
-// 
-// These are just numbers:
-// lookaround speed multiplier
-// movement speed multiplier
 
 // INI file must be placed next the the game's executable at SteamLibrary\steamapps\common\GUILTY GEAR Xrd -REVELATOR-\Binaries\Win32\ggxrd_hitbox_overlay.ini
 // Example INI file content:
@@ -167,8 +164,13 @@ void Settings::readSettings() {
 	addKeyComboToParse(keyCombosToParse, "fovIncrease", &fovIncrease, "MouseWheelDown");
 	addKeyComboToParse(keyCombosToParse, "toggleHud", &toggleHud, "F1");
 	addKeyComboToParse(keyCombosToParse, "freezeGameToggle", &freezeGameToggle, "F3");
-	addKeyComboToParse(keyCombosToParse, "slowmoGameToggle", &slowmoGameToggle, "F4");
+	addKeyComboToParse(keyCombosToParse, "slowmoGameToggle", &slowmoGameToggle, "");
 	addKeyComboToParse(keyCombosToParse, "allowNextFrame", &allowNextFrame, "F5");
+	addKeyComboToParse(keyCombosToParse, "continuousScreenshotToggle", &continuousScreenshotToggle, "");
+	addKeyComboToParse(keyCombosToParse, "blackBackgroundToggle", &blackBackgroundToggle, "F2");
+	addKeyComboToParse(keyCombosToParse, "hideOneOfTheSidesToggle", &hideOneOfTheSidesToggle, "");
+	addKeyComboToParse(keyCombosToParse, "screenshotBtn", &screenshotBtn, "F8");
+	addKeyComboToParse(keyCombosToParse, "disableModToggle", &disableModToggle, "");
 
 	std::map<std::string, NumberToParse> numbersToParse;
 	addNumberToParse(numbersToParse, "lookaroundSpeedMultiplier", &lookaroundSpeedMultiplier, 1.F);
@@ -176,17 +178,27 @@ void Settings::readSettings() {
 	addNumberToParse(numbersToParse, "rollMultiplier", &movementSpeedMultiplier, 1.F);
 	addNumberToParse(numbersToParse, "fovChangeSpeedMultiplier", &fovChangeSpeedMultiplier, 1.F);
 
-	bool slowmoTimesParsed = false;
+	for (auto it = keyCombosToParse.begin(); it != keyCombosToParse.end(); ++it) {
+		it->second.keyCombo->clear();
+	}
+
+	std::map<std::string, IntegerToParse> integersToParse;
+	addIntegerToParse(integersToParse, "slowmoTimes", &slowmoTimes, 3);
+	addIntegerToParse(integersToParse, "sideToHide", &sideToHide, 1);
+
+	bool startDisabledParsed = false;
+
+	screenshotPath.clear();
+	bool screenshotPathParsed = false;
+
+	std::map<std::string, BooleanToParse> booleansToParse;
+	addBooleanToParse(booleansToParse, "allowContinuousScreenshotting", &allowContinuousScreenshotting, false);
+	addBooleanToParse(booleansToParse, "dontUseScreenshotTransparency", &dontUseScreenshotTransparency, false);
 
 	char errorString[500];
 	char buf[1024];
-	wchar_t currentPath[MAX_PATH];
-	GetCurrentDirectoryW(_countof(currentPath), currentPath);
-	wcscat_s(currentPath, L"\\");
-	wcscat_s(currentPath, INI_FILE_NAME);
-	logwrap(fprintf(logfile, "INI file path: %ls\n", currentPath));
 	FILE* file = NULL;
-	if (_wfopen_s(&file, currentPath, L"rt") || !file) {
+	if (_wfopen_s(&file, settingsPath.c_str(), L"rt") || !file) {
 		strerror_s(errorString, errno);
 		logwrap(fprintf(logfile, "Could not open INI file: %s\n", errorString));
 	} else {
@@ -202,7 +214,7 @@ void Settings::readSettings() {
 
 			std::string keyName = parseKeyName(buf);
 			std::string keyValue = getKeyValue(buf);
-			if (!keyName.empty() && !keyValue.empty()) {
+			if (!keyName.empty()) {
 				std::string keyNameUpper = toUppercase(keyName);
 				auto foundKeyCombo = keyCombosToParse.find(keyNameUpper);
 				if (foundKeyCombo != keyCombosToParse.end()) {
@@ -212,8 +224,25 @@ void Settings::readSettings() {
 				if (foundNumber != numbersToParse.end()) {
 					foundNumber->second.numberParsed = parseNumber(foundNumber->second.name.c_str(), keyValue, *foundNumber->second.number);
 				}
-				if (!slowmoTimesParsed && keyNameUpper == "SLOWMOTIMES") {
-					slowmoTimesParsed = parseInteger("slowmoTimes", keyValue, slowmoTimes);
+				if (firstSettingsParse && !startDisabledParsed && keyNameUpper == "STARTDISABLED") {
+					bool startDisabled = false;
+					startDisabledParsed = parseBoolean("startDisabled", keyValue, startDisabled);
+					if (startDisabledParsed && startDisabled) {
+						endScene.modDisabled = true;
+					}
+				}
+				if (!screenshotPathParsed && keyNameUpper == "SCREENSHOTPATH") {
+					screenshotPath = keyValue;  // in UTF-8
+					screenshotPathParsed = true;
+					logwrap(fprintf(logfile, "Parsed screenshotPath (UTF8): %s\n", keyValue.c_str()));
+				}
+				auto foundBoolean = booleansToParse.find(keyNameUpper);
+				if (foundBoolean != booleansToParse.end()) {
+					foundBoolean->second.booleanParsed = parseBoolean(foundBoolean->second.name.c_str(), keyValue, *foundBoolean->second.boolean);
+				}
+				auto foundInteger = integersToParse.find(keyNameUpper);
+				if (foundInteger != integersToParse.end()) {
+					foundInteger->second.integerParsed = parseInteger(foundInteger->second.name.c_str(), keyValue, *foundInteger->second.integer);
 				}
 			}
 			if (feof(file)) break;
@@ -242,6 +271,22 @@ void Settings::readSettings() {
 			*it->second.number = it->second.defaultValue;
 		}
 	}
+
+	for (auto it = booleansToParse.begin(); it != booleansToParse.end(); ++it) {
+		if (!it->second.booleanParsed) {
+			logwrap(fprintf(logfile, "%s not parsed, using default value: %d\n", it->second.name.c_str(), (int)it->second.defaultValue));
+			*it->second.boolean = it->second.defaultValue;
+		}
+	}
+
+	for (auto it = integersToParse.begin(); it != integersToParse.end(); ++it) {
+		if (!it->second.integerParsed) {
+			logwrap(fprintf(logfile, "%s not parsed, using default value: %d\n", it->second.name.c_str(), it->second.defaultValue));
+			*it->second.integer = it->second.defaultValue;
+		}
+	}
+
+	firstSettingsParse = false;
 }
 
 void Settings::addKeyComboToParse(std::map<std::string, KeyComboToParse>& map, std::string name, KeyComboSet* keyComboSet, const char* defaultValue) {
@@ -249,7 +294,15 @@ void Settings::addKeyComboToParse(std::map<std::string, KeyComboToParse>& map, s
 }
 
 void Settings::addNumberToParse(std::map<std::string, NumberToParse>& map, std::string name, float* number, float defaultValue) {
-	map.insert({toUppercase(name), {name, number, defaultValue}});
+	map.insert({ toUppercase(name), {name, number, defaultValue} });
+}
+
+void Settings::addBooleanToParse(std::map<std::string, BooleanToParse>& map, std::string name, bool* boolean, bool defaultValue) {
+	map.insert({ toUppercase(name), {name, boolean, defaultValue} });
+}
+
+void Settings::addIntegerToParse(std::map<std::string, IntegerToParse>& map, std::string name, int* number, int defaultValue) {
+	map.insert({ toUppercase(name), {name, number, defaultValue} });
 }
 
 std::string Settings::toUppercase(std::string str) const {
@@ -359,8 +412,10 @@ std::string Settings::getKeyValue(const char* buf) const {
 	return keyValue;
 }
 
-bool Settings::parseKeys(const char* keyName, std::string keyValue, KeyComboSet& keyCodes) {
-
+bool Settings::parseKeys(const char* keyName, const std::string& keyValue, KeyComboSet& keyCodes) {
+	if (keyValue.empty()) {
+		return true;
+	}
 	keyCodes.beginInsert();
 
 	#ifdef LOG_PATH
@@ -409,6 +464,7 @@ void Settings::replaceChar(char* buf, char orig, char newChar) const {
 }
 
 bool Settings::parseNumber(const char* keyName, std::string keyValue, float& number) {
+	if (keyValue.empty()) return false;
 
 	replaceChar(&keyValue.front(), ',', '.');
 
@@ -430,10 +486,93 @@ bool Settings::parseNumber(const char* keyName, std::string keyValue, float& num
 	return true;
 }
 
-bool Settings::parseInteger(const char* keyName, std::string keyValue, int& integer) {
+bool Settings::parseInteger(const char* keyName, const std::string& keyValue, int& integer) {
+	if (keyValue.empty()) return false;
 	int result = std::atoi(keyValue.c_str());
 	if (result == 0 && keyValue != "0") return false;
 	integer = result;
 	logwrap(fprintf(logfile, "Parsed integer for %s: %d\n", keyName, integer));
+	return true;
+}
+
+void Settings::readSettingsIfChanged() {
+	if (!directoryChangeHandle) return;
+	DWORD dwWaitStatus;
+	if (lastCallFailedToGetTime) {
+		dwWaitStatus = WAIT_OBJECT_0;
+	}
+	else {
+		dwWaitStatus = WaitForSingleObject(directoryChangeHandle, 0);
+	}
+	if (dwWaitStatus == WAIT_OBJECT_0) {
+		FILETIME newTime;
+		if (!getLastWriteTime(settingsPath, &newTime)) {
+			lastCallFailedToGetTime = true;
+			return;
+		}
+		lastCallFailedToGetTime = false;
+		if (newTime.dwLowDateTime != lastSettingsWriteTime.dwLowDateTime
+			|| newTime.dwHighDateTime != lastSettingsWriteTime.dwHighDateTime) {
+			readSettings();
+		}
+		if (!FindNextChangeNotification(directoryChangeHandle)) {
+			WinError winErr;
+			logwrap(fprintf(logfile, "FindNextChangeNotification failed: %s\n", winErr.getMessage()));
+			FindCloseChangeNotification(directoryChangeHandle);
+			directoryChangeHandle = NULL;
+			return;
+		}
+	}
+}
+
+bool Settings::parseBoolean(const char* keyName, const std::string& keyValue, bool& aBooleanValue) {
+	if (_stricmp(keyValue.c_str(), "true") == 0) {
+		logwrap(fprintf(logfile, "Parsed boolean for %s: %d\n", keyName, 1));
+		aBooleanValue = true;
+		return true;
+	}
+	if (_stricmp(keyValue.c_str(), "false") == 0) {
+		logwrap(fprintf(logfile, "Parsed boolean for %s: %d\n", keyName, 0));
+		aBooleanValue = false;
+		return true;
+	}
+	return false;
+}
+
+std::wstring Settings::getCurrentDirectory() {
+	DWORD requiredSize = GetCurrentDirectoryW(0, NULL);
+	if (!requiredSize) {
+		WinError winErr;
+		logwrap(fprintf(logfile, "GetCurrentDirectoryW failed: %s\n", winErr.getMessage()));
+		return std::wstring{};
+	}
+	std::wstring currentDir;
+	currentDir.resize(requiredSize - 1);
+	if (!GetCurrentDirectoryW(currentDir.size() + 1, &currentDir.front())) {
+		WinError winErr;
+		logwrap(fprintf(logfile, "GetCurrentDirectoryW (second call) failed: %s\n", winErr.getMessage()));
+		return std::wstring{};
+	}
+	return currentDir;
+}
+
+bool Settings::getLastWriteTime(const std::wstring& path, FILETIME* fileTime) {
+	HANDLE hFile = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (!hFile || hFile == INVALID_HANDLE_VALUE) {
+		WinError winErr;
+		logwrap(fprintf(logfile, "CreateFileW failed: %s. %.8x\n", winErr.getMessage(), winErr.code));;
+		return false;
+	}
+	FILETIME creationTime{ 0 };
+	FILETIME lastAccessTime{ 0 };
+	FILETIME lastWriteTime{ 0 };
+	if (!GetFileTime(hFile, &creationTime, &lastAccessTime, &lastWriteTime)) {
+		WinError winErr;
+		logwrap(fprintf(logfile, "GetFileTime failed: %s\n", winErr.getMessage()));
+		CloseHandle(hFile);
+		return false;
+	}
+	CloseHandle(hFile);
+	*fileTime = lastWriteTime;
 	return true;
 }
