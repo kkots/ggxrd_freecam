@@ -366,3 +366,4 @@ After setting UNICODE support correctly and adding dependencies you can build th
 
 - 20'th November 2023 - added transparent/non-transparent screenshotting.
 - 20'th November 2023 - made full invulnerability of everyone to everything when `hideOneOfTheSidesToggle` is used.
+- 21'st November 2023: Added reverse chroma key to the transparent screenshotting, so that pixels that have non-black color but 0 alpha still get some alpha.

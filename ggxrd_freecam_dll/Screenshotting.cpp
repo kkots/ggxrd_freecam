@@ -34,6 +34,10 @@ void Screenshotting::takeScreenshot(IDirect3DDevice9* device) {
 			Pixel& d = *gameImagePtr;
 
 			d.a ^= 255;
+			unsigned int maxColor = d.r;
+			if (d.g > maxColor) maxColor = d.g;
+			if (d.b > maxColor) maxColor = d.b;
+			if (maxColor > d.a) d.a = maxColor;
 			++gameImagePtr;
 		}
 	}
