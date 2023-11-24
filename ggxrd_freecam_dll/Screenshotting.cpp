@@ -46,6 +46,14 @@ void Screenshotting::takeScreenshot(IDirect3DDevice9* device) {
 
 }
 
+void Screenshotting::clear(bool isShuttingDown) {
+	std::unique_lock<std::mutex> guard(offscreenSurfaceMutex);
+	shuttingDown = isShuttingDown;
+	offscreenSurface = NULL;
+	offscreenSurfaceWidth = 0;
+	offscreenSurfaceHeight = 0;
+}
+
 bool Screenshotting::getFramebufferData(IDirect3DDevice9* device,
 	std::vector<unsigned char>& buffer,
 	IDirect3DSurface9* renderTarget,
@@ -72,6 +80,7 @@ bool Screenshotting::getFramebufferData(IDirect3DDevice9* device,
 	if (widthPtr) *widthPtr = renderTargetDescPtr->Width;
 	if (heightPtr) *heightPtr = renderTargetDescPtr->Height;
 
+	std::unique_lock<std::mutex> guard(offscreenSurfaceMutex);
 	IDirect3DSurface9* offscreenSurface = getOffscreenSurface(device, renderTargetDescPtr);
 	if (!offscreenSurface) return false;
 	if (FAILED(device->GetRenderTargetData(renderTarget, offscreenSurface))) {
@@ -101,6 +110,7 @@ bool Screenshotting::getFramebufferData(IDirect3DDevice9* device,
 }
 
 IDirect3DSurface9* Screenshotting::getOffscreenSurface(IDirect3DDevice9* device, D3DSURFACE_DESC* renderTargetDescPtr) {
+	if (shuttingDown) return nullptr;
 	D3DSURFACE_DESC renderTargetDesc;
 	if (!renderTargetDescPtr) {
 		CComPtr<IDirect3DSurface9> renderTarget;

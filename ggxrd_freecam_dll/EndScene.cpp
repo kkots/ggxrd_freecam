@@ -21,6 +21,7 @@ bool EndScene::onDllMain() {
 
 	orig_EndScene = (EndScene_t)direct3DVTable.getDirect3DVTable()[42];
 	orig_Present = (Present_t)direct3DVTable.getDirect3DVTable()[17];
+	orig_Reset = (Reset_t)direct3DVTable.getDirect3DVTable()[16];
 
 	// there will actually be a deadlock during DLL unloading if we don't put Present first and EndScene second
 
@@ -34,10 +35,36 @@ bool EndScene::onDllMain() {
 		&orig_EndSceneMutex,
 		"EndScene")) return false;
 
+	if (!detouring.attach(
+		&(PVOID&)(orig_Reset),
+		hook_Reset,
+		&orig_ResetMutex,
+		"Reset")) return false;
+
 	inputData.keyInputs.reserve(10);
 	tempPressedKeys.reserve(10);
 
 	return !error;
+}
+
+void EndScene::onDllDetach() {
+	screenshotting.clear(true);
+}
+
+HRESULT __stdcall hook_Reset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters) {
+	++detouring.hooksCounter;
+	endScene.resetHook();
+	HRESULT result;
+	{
+		std::unique_lock<std::mutex> guard(endScene.orig_ResetMutex);
+		result = endScene.orig_Reset(device, pPresentationParameters);
+	}
+	--detouring.hooksCounter;
+	return result;
+}
+
+void EndScene::resetHook() {
+	screenshotting.clear();
 }
 
 HRESULT __stdcall hook_EndScene(IDirect3DDevice9* device) {

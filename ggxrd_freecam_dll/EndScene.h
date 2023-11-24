@@ -8,7 +8,9 @@
 
 using EndScene_t = HRESULT(__stdcall*)(IDirect3DDevice9*);
 using Present_t = HRESULT(__stdcall*)(IDirect3DDevice9*, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion);
+using Reset_t = HRESULT(__stdcall*)(IDirect3DDevice9*, D3DPRESENT_PARAMETERS* pPresentationParameters);
 
+HRESULT __stdcall hook_Reset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters);
 HRESULT __stdcall hook_EndScene(IDirect3DDevice9* device);
 HRESULT __stdcall hook_Present(IDirect3DDevice9* device, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion);
 
@@ -16,8 +18,10 @@ class EndScene
 {
 public:
 	bool onDllMain();
+	void onDllDetach();
 	HRESULT presentHook(IDirect3DDevice9* device, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion);
 	void endSceneHook(IDirect3DDevice9* device);
+	void resetHook();
 	bool endSceneOnlyProcessKeys();
 	void finishProcessingKeys();
 	void setPresentFlag();
@@ -27,6 +31,8 @@ public:
 	std::mutex orig_EndSceneMutex;
 	Present_t orig_Present = nullptr;
 	std::mutex orig_PresentMutex;
+	Reset_t orig_Reset = nullptr;
+	std::mutex orig_ResetMutex;
 	bool modDisabled = false;
 private:
 	struct HiddenEntity {
