@@ -4,7 +4,7 @@
 
 ## Description
 
-Allows to move camera freely in Guilty Gear Xrd Rev2 version 2211 (as of 20'th November 2023).  
+Allows to move camera freely in Guilty Gear Xrd Rev2 version 2211 (as of 21'st January 2024).  
 Also allows to play the game one frame at a time (only in training mode).  
 Also allows to take screenshots of the game with transparency.  
 No controller support (I don't own a controller).
@@ -18,7 +18,7 @@ Thanks to WorseThanYou for reworking the mouse controls so that they work with t
 Intel processor architecture x86 (32-bit) or x64 (64-bit) (AMD will work). Windows operating system.  
 May work on Ubuntu/Linux running GGXrd under Steam Proton.
 
-## Quickstart
+## Quickstart for Windows
 
 1. Launch the game. Or you can do the next step at any point while the game is running.
 
@@ -254,7 +254,7 @@ freezeGameToggle = F3
 slowmoGameToggle = 
 
 ; Only works while the game is frozen using freezeGameToggle. Advances the game forward one frame
-allowNextFrameKeyCombo = F5
+allowNextFrameKey = F5
 
 ; This works in conjunction with slowmoGameToggle. Only round numbers greater than 1 allowed.
 ; Specifies by how many times to slow the game down
@@ -368,3 +368,4 @@ After setting UNICODE support correctly and adding dependencies you can build th
 - 20'th November 2023 - made full invulnerability of everyone to everything when `hideOneOfTheSidesToggle` is used.
 - 21'st November 2023 - added reverse chroma key to the transparent screenshotting, so that pixels that have non-black color but 0 alpha still get some alpha.
 - 24'th November 2023 - fixed crash when changing resolutions while the mod is loaded.
+- 21'st January 2024 - fixed a mistake in one of the field names in the example .ini

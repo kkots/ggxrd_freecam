@@ -1,0 +1,5 @@
+Obfuscate injector strings
+Replace coordinate coefficient hardcoded value with sigscan
+Allow to move and rotate characters
+Allow to move light sources
+Check if uses isMatchRunning, replace match running offset with sig.
