@@ -179,7 +179,7 @@ bool EndScene::endSceneOnlyProcessKeys() {
 			freezeGame = false;
 			logwrap(fputs("Freeze game turned off\n", logfile));
 		}
-		else if (trainingMode) {
+		else {
 			freezeGame = true;
 			logwrap(fputs("Freeze game turned on\n", logfile));
 		}
@@ -262,7 +262,7 @@ bool EndScene::endSceneOnlyProcessKeys() {
 			logwrap(fputs("Hide opponent on\n", logfile));
 		}
 	}
-	game.freezeGame = (allowNextFrameIsHeld || freezeGame) && trainingMode && !modDisabled;
+	game.freezeGame = (allowNextFrameIsHeld || freezeGame) && !modDisabled;
 	if (!trainingMode || modDisabled) {
 		game.slowmoGame = false;
 	}

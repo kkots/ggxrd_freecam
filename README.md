@@ -36,10 +36,21 @@ The mod may show up as a virus. I swear this is not a virus, check the source co
 
 ## Quickstart for Ubuntu/Linux
 
-On Ubuntu/Linux the injector won't work. You need to patch the game so that it loads the DLL automatically on startup. The `ggxrd_freecam_patcher_linux` does exactly that and must be launched directly, without Wine. (Its Windows version, `ggxrd_freecam_patcher.exe`, can be used on Windows if you want to make the game load the mod automatically on startup.) The patcher on Ubuntu/Linux, when it asks, must be provided the full path to the game executable (`GuiltyGearXrd.exe`) without quotes.  
-The patched game will now try to load the `ggxrd_freecam_dll.dll` on startup. In order for the game to find the DLL it must be placed in the same directory as the game executable, which should be in Steam's directory, for example: `~/.steam/debian-installation/steamapps/common/GUILTY GEAR Xrd -REVELATOR-/Binaries/Win32`, where `~` is your home directory.  
+On Ubuntu/Linux the injector won't work on its own. You need to cd into the mod's directory and type into the console:
+
+```bash
+.\launch_ggxrd_freecam_injector_linux.sh
+```
+
+This will launch the injector (the .exe one) on the same Wine server that Guilty Gear runs on. Assuming you're running the game using Steam Proton, and its version is supported, everything should work.  
+If it doesn't work, you can use the patcher:
+
+## Patching the game to always launch with the mod
+
+If you patch the game it will always load the DLL automatically on startup. The `ggxrd_freecam_patcher_linux` and `ggxrd_freecam_patcher` do exactly that (on Linux and Windows respectively) and must be launched directly, without Wine. The patcher on Ubuntu/Linux, when it asks, must be provided the full path to the game executable (`GuiltyGearXrd.exe`) without quotes. The Windows patcher will show a file selection dialog instead.  
+The patched game will now try to load the `ggxrd_freecam_overlay.dll` on startup. In order for the game to find the DLL it must be placed in the same directory as the game executable, which should be in Steam's directory, for example: `~/.steam/debian-installation/steamapps/common/GUILTY GEAR Xrd -REVELATOR-/Binaries/Win32`, where `~` is your home directory.  
 If the DLL is not found when the game launches, it will just run normally, without the mod.  
-Since there's no way to unload the mod on Ubuntu/Linux (the injector doesn't work), you can add the `.ini` file mentioned in `Controls configuration` section into the folder with the game executable and change the line `startDisabled = false` to `startDisabled = true` in it and use the `disableModToggle` (no default hotkey) hotkey to enable the mod when you need.
+Normally you can run the injector to unload the mod, but if for whatever reason you can't run on Linux, then there's no way to unload the mod. To solve this you can add the `.ini` file mentioned in `Controls configuration` section into the folder with the game executable and change the line `startDisabled = false` to `startDisabled = true` in it and use the `disableModToggle` (no default hotkey) hotkey to enable the mod when you need.
 
 If Steam Proton is taking forever to launch the game, patched or not, then rename the mod's dll and put the original, unpatched version of the game executable back, then try switching the Proton version in Steam's settings and agree to restart Steam. After restarting Steam will start downloading two things related to Guilty Gear Xrd and will launch GGXrd automatically (even though you didn't tell it to). GGXrd should work. Quit GGXrd. Place the patched version of the game executable and the mod's dll back and restart GGXrd. GGXrd will launch with the mod. Idk what causes this.
 
@@ -80,7 +91,7 @@ You can use this mod to take transparent or non-transparent screenshots of the g
 
 ### Setting up the game to enable transparent screenshots
 
-To enabled screenshots taken to be with transparent background, you need to go into the game's `Display settings` and set `Post-Effect` to `OFF`.
+To enable screenshots taken to be with transparent background, you need to go into the game's `Display settings` and set `Post-Effect` to `OFF`.
 
 ![Screenshot can't be viewed](posteffect_off.jpg)
 
@@ -169,11 +180,11 @@ Here the options you must replace are:
 Again, if any paths contain spaces, you must enclose them in quotes. You can read about ffmpeg filter syntax on: <https://ffmpeg.org/ffmpeg-filters.html#toc-Filtering-Introduction>  
 I will add that `-lavfi`, `-filter_complex`, `-vf`, `-af`, `-filter` mean exactly the same thing, which is a filtergraph. `:v` usually means the video part of an input, `:a` means the audio part of an input.
 
-## Renumbering frames and changing framerate of a subrange of frames in a GIF
+### Renumbering frames and changing framerate of a subrange of frames in a GIF
 
 The tools provided in <https://github.com/kkots/GIFTools> allow renumbering PNG files in a PNG sequence and altering individual GIF frame lengths through a console (non-graphical) interface.
 
-### Controls configuration
+## Controls configuration
 
 If you wish to configure key and/or mouse combinations for the controls, create a text file named `ggxrd_freecam.ini` and place it in the directory where the game executable is. For example, for me my Steam version of the game is located at `...\SteamLibrary\steamapps\common\GUILTY GEAR Xrd -REVELATOR-\Binaries\Win32`.  
 Here's an example of the `.ini` file:
@@ -323,7 +334,7 @@ The `ggxrd_freecam_injector` project builds an application that will inject a dl
 
 The `ggxrd_freecam_dll` project builds the dll that's responsible for the freecam functionality.
 
-The `ggxrd_freecam_patcher` project is cross-platform for Windows and Ubuntu/Linux and patches the GuiltyGearXrd.exe executable so that it launches the mod's overlay DLL on startup. This is needed because injector doesn't work on Ubuntu/Linux or to make the game always start with the mod on Windows.
+The `ggxrd_freecam_patcher` project is cross-platform for Windows and Ubuntu/Linux and patches the GuiltyGearXrd.exe executable so that it launches the mod's overlay DLL on startup. This is needed to make the game always start with the mod on Windows.
 
 All applications need to be compiled as 32-bit (x86) projects. Open the `.sln` file, which is located in the root of the repository, using Visual Studio (I'm using 2022 Community Edition). In the top bar select `Release` and `x86`.
 

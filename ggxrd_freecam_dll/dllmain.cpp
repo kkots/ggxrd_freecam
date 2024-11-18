@@ -13,8 +13,6 @@
 #include "Settings.h"
 #include "Keyboard.h"
 
-const char* DLL_NAME = "ggxrd_freecam_dll.dll";
-
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
@@ -34,13 +32,6 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             fclose(logfile);
         }
 #endif
-
-        uintptr_t start;
-        uintptr_t end;
-        if (!getModuleBounds(DLL_NAME, &start, &end) || !start || !end) {
-            logwrap(fputs("Note to developer: make sure to specify DLL_NAME char * constant correctly in dllmain.cpp\n", logfile));
-            return FALSE;
-        }
 
         if (!detouring.beginTransaction()) break;
         if (!game.onDllMain()) break;
@@ -66,7 +57,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         logwrap(fprintf(logfile, "DllMain called from thread ID %d\n", GetCurrentThreadId()));
         detouring.detachAll();
         Sleep(100);
-        while (detouring.someThreadsAreExecutingThisModule()) Sleep(100);
+        while (detouring.someThreadsAreExecutingThisModule(hModule)) Sleep(100);
         hud.onDllDetach();
         controls.onDllDetach();
         settings.onDllDetach();

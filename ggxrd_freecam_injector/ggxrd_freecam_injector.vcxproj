@@ -133,6 +133,12 @@
   <ItemGroup>
     <ClInclude Include="WinError.h" />
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="..\launch_ggxrd_freecam_injector_linux.sh">
+      <DeploymentContent>true</DeploymentContent>
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

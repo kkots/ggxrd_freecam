@@ -17,7 +17,7 @@ public:
 	bool cancelTransaction();
 	void detachAll();
 	void detachAllButThese(const std::vector<PVOID>& dontDetachThese = std::vector<PVOID>{});
-	bool someThreadsAreExecutingThisModule();
+	bool someThreadsAreExecutingThisModule(HMODULE hModule);
 	DWORD dllMainThreadId = 0;
 	std::atomic_int hooksCounter{0};
 private:
