@@ -522,10 +522,14 @@ std::vector<EndScene::HiddenEntity>::iterator EndScene::findHiddenEntity(char* e
 }
 
 void EndScene::onGifModeBlackBackgroundChanged() {
-	if (!settings.turnOffPostEffectWhenMakingBackgroundBlack) return;
-	BOOL theValue = game.postEffectOn();
-	BOOL whatTheValueShouldBe = !camera.darkenMode;
-	if (theValue != whatTheValueShouldBe) {
-		game.postEffectOn() = whatTheValueShouldBe;
+	bool newIsInMode = camera.darkenMode && settings.turnOffPostEffectWhenMakingBackgroundBlack;
+	if (newIsInMode != isInDarkenModePlusTurnOffPostEffect) {
+		isInDarkenModePlusTurnOffPostEffect = newIsInMode;
+		if (isInDarkenModePlusTurnOffPostEffect) {
+			postEffectWasOnWhenEnteringDarkenModePlusTurnOffPostEffect = game.postEffectOn() != 0;
+			game.postEffectOn() = false;
+		} else if (postEffectWasOnWhenEnteringDarkenModePlusTurnOffPostEffect) {
+			game.postEffectOn() = true;
+		}
 	}
 }

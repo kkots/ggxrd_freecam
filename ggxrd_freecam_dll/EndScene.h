@@ -70,6 +70,8 @@ private:
 
 	bool hideOpponent = false;
 	std::vector<HiddenEntity> hiddenEntities;
+	bool postEffectWasOnWhenEnteringDarkenModePlusTurnOffPostEffect = false;
+	bool isInDarkenModePlusTurnOffPostEffect = false;
 };
 
 extern EndScene endScene;
