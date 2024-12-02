@@ -45,6 +45,13 @@ bool Game::onDllMain() {
 			&orig_determineHitTypeMutex,
 			"determineHitType");
 	}
+	
+	postEffectOnPtr = (BOOL*)sigscanOffset(
+		"GuiltyGearXrd.exe",
+		"\x89\x8e\xa4\x01\x00\x00\x8b\x15\x00\x00\x00\x00\x89\x96\xa8\x01\x00\x00\x39\x1d\x00\x00\x00\x00\x0f\x94\xc0\x33\xc9\x89\x86\xac\x01\x00\x00",
+		"xxxxxxxx????xxxxxxxx????xxxxxxxxxxx",
+		{ 20, 0 },
+		nullptr, "postEffectOn");
 
 	return !error;
 }
@@ -205,4 +212,10 @@ int Game::HookHelp::determineHitTypeHook(void* defender, BOOL wasItType10Hitbox,
 	}
 	if (!game.everyoneInvulnerable) return result;
 	return 0;
+}
+
+BOOL& Game::postEffectOn() {
+	static BOOL placeholder = 0;
+	if (!postEffectOnPtr) return placeholder;
+	return *postEffectOnPtr;
 }

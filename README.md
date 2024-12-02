@@ -194,14 +194,14 @@ Here's an example of the `.ini` file:
 ; For example it could be C:\Something\SteamLibrary\steamapps\common\GUILTY GEAR Xrd -REVELATOR-\Binaries\Win32
 ; You don't need to reload the mod when you change this file - it re-reads this settings file automatically when it changes.
 ; Available keys:
-; Backspace, Tab, Enter, PauseBreak, CapsLock, Escape, Space, PageUp, PageDown, End, Home, ArrowLeft, ArrowUp, ArrowRight, ArrowDown, PrintScreen, Insert Delete, Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9, NumMultiply, NumAdd, NumSubtract, NumDecimal, NumDivide, F1, F2, F3, F4, F, F6, F7, F8, F9, F10, F11, F12, NumLock, ScrollLock, Colon, Plus, Minus, Comma, Period, Slash, Tilde, OpenSquareBracket, Backslash, CloseSquareBracket, Quote, Backslash2, LeftClick, RightClick, MiddleClick, MouseMoveLeft, MouseMoveUp, MouseMoveRight, MouseMoveDown, MouseWheelUp, MouseWheelDown, 0123456789, ABCDEFGHIJKLMNOPQRSTUVWXYZ, Shift, Ctrl, Alt
+; Backspace, Tab, Enter, PauseBreak, CapsLock, Escape, Space, PageUp, PageDown, End, Home, ArrowLeft, ArrowUp, ArrowRight, ArrowDown, PrintScreen, Insert Delete, Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9, NumMultiply, NumAdd, NumSubtract, NumDecimal, NumDivide, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, NumLock, ScrollLock, Colon, Plus, Minus, Comma, Period, Slash, Tilde, OpenSquareBracket, Backslash, CloseSquareBracket, Quote, Backslash2, LeftClick, RightClick, MiddleClick, MouseMoveLeft, MouseMoveUp, MouseMoveRight, MouseMoveDown, MouseWheelUp, MouseWheelDown, 0123456789, ABCDEFGHIJKLMNOPQRSTUVWXYZ, Shift, Ctrl, Alt
 ; You can specify key and key + mouse combinations by separating key names with the '+' sign.
 ; You can assign same key to multiple features - it will toggle/set in motion all of them simultaneously.
 
 ; Toggle freecam on/off
 toggleFreecam = LeftClick
 
-; Toggle freecam on/off, but when toggling off, free onnly the cursor and leave the camera position unchanged
+; Toggle freecam on/off, but when toggling off, free only the cursor and leave the camera position unchanged
 toggleFreecamButLeaveLocked = RightClick
 
 ; Moves camera across space
@@ -281,7 +281,8 @@ startDisabled = false
 
 ; Takes a screenshot and saves it at screenshotPath path
 ; To take screenshots over a transparent background you need to go to the game's
-; Display Settings and turn off Post-Effects, then use blackBackgroundToggle.
+; Display Settings and turn off Post-Effects (or use turnOffPostEffectWhenMakingBackgroundBlack
+; or togglePostEffectOnOff for this), then use blackBackgroundToggle.
 ; Then screenshots will film character over transparent background
 ; If the dontUseScreenshotTransparency setting is true, screenshot will be without
 ; transparency anyway
@@ -319,6 +320,18 @@ continuousScreenshotToggle =
 
 ; Setting this to true will produce screenshots without transparency
 dontUseScreenshotTransparency = false
+
+; Specify true or false.
+; When true, whenever you enter the blackBackgroundToggle mode,
+; the Post-Effect are turned off automatically, and when you leave this mode, it gets turned back on.
+turnOffPostEffectWhenMakingBackgroundBlack = true
+
+; A keyboard shortcut to toggle the game's Settings - Display Settings - Post-Effect. Changing it this way does not
+; require the current match to be restarted.
+; Alternatively, you could set the turnOffPostEffectWhenMakingBackgroundBlack setting to true
+; so that whenever you enter the blackBackgroundToggle mode, the Post-Effect are
+; turned off automatically, and when you leave those modes, it gets turned back on.
+togglePostEffectOnOff =
 
 ```
 

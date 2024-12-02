@@ -171,6 +171,7 @@ void Settings::readSettings() {
 	addKeyComboToParse(keyCombosToParse, "hideOneOfTheSidesToggle", &hideOneOfTheSidesToggle, "");
 	addKeyComboToParse(keyCombosToParse, "screenshotBtn", &screenshotBtn, "F8");
 	addKeyComboToParse(keyCombosToParse, "disableModToggle", &disableModToggle, "");
+	addKeyComboToParse(keyCombosToParse, "togglePostEffectOnOff", &togglePostEffectOnOff, "");
 
 	std::map<std::string, NumberToParse> numbersToParse;
 	addNumberToParse(numbersToParse, "lookaroundSpeedMultiplier", &lookaroundSpeedMultiplier, 1.F);
@@ -194,6 +195,7 @@ void Settings::readSettings() {
 	std::map<std::string, BooleanToParse> booleansToParse;
 	addBooleanToParse(booleansToParse, "allowContinuousScreenshotting", &allowContinuousScreenshotting, false);
 	addBooleanToParse(booleansToParse, "dontUseScreenshotTransparency", &dontUseScreenshotTransparency, false);
+	addBooleanToParse(booleansToParse, "turnOffPostEffectWhenMakingBackgroundBlack", &turnOffPostEffectWhenMakingBackgroundBlack, true);
 
 	char errorString[500];
 	char buf[1024];
@@ -248,6 +250,10 @@ void Settings::readSettings() {
 			if (feof(file)) break;
 		}
 		fclose(file);
+		
+		if (!firstSettingsParse && turnOffPostEffectWhenMakingBackgroundBlack) {
+			endScene.onGifModeBlackBackgroundChanged();
+		}
 	}
 
 	for (auto it = keyCombosToParse.begin(); it != keyCombosToParse.end(); ++it) {

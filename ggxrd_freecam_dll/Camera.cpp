@@ -96,13 +96,13 @@ void Camera::updateCameraManually(CameraMoveInputs& inputs) {
 	CameraValues* cam = (CameraValues*)(camPtr + 0x384);
 	
 	float rollRadians = (float)cam->roll / 32768.F * PI;
-	float cosRoll = cos(rollRadians);
-	float sinRoll = sin(rollRadians);
+	float cosRoll = cosf(rollRadians);
+	float sinRoll = sinf(rollRadians);
 
 	float horizDeltaAngle = inputs.lookRightSpeed - inputs.lookLeftSpeed;
 	float horizDeltaAngleRadians = horizDeltaAngle / 32768.F * PI;
-	float sinHorizDeltaAngle = sin(horizDeltaAngleRadians);
-	float cosHorizDeltaAngle = cos(horizDeltaAngleRadians);
+	float sinHorizDeltaAngle = sinf(horizDeltaAngleRadians);
+	float cosHorizDeltaAngle = cosf(horizDeltaAngleRadians);
 	float deltaYawRadians = atan2f(cosRoll * sinHorizDeltaAngle, cosHorizDeltaAngle);
 	float deltaPitchRadians = asinf(-sinRoll * sinHorizDeltaAngle);
 	cam->yaw += (int)(deltaYawRadians / PI * 32768.F);
@@ -110,8 +110,8 @@ void Camera::updateCameraManually(CameraMoveInputs& inputs) {
 
 	float vertDeltaAngle = inputs.lookUpSpeed - inputs.lookDownSpeed;
 	float vertDeltaAngleRadians = vertDeltaAngle / 32768.F * PI;
-	float sinVertDeltaAngle = sin(vertDeltaAngleRadians);
-	float cosVertDeltaAngle = cos(vertDeltaAngleRadians);
+	float sinVertDeltaAngle = sinf(vertDeltaAngleRadians);
+	float cosVertDeltaAngle = cosf(vertDeltaAngleRadians);
 	deltaYawRadians = atan2f(sinRoll * sinVertDeltaAngle, cosVertDeltaAngle);
 	deltaPitchRadians = asinf(cosRoll * sinVertDeltaAngle);
 	cam->yaw += (int)(deltaYawRadians / PI * 32768.F);
@@ -157,14 +157,14 @@ void Camera::anglesToDirections(int pitch, int yaw, int roll, Vector3& forward, 
 	float yawFloat = (float)yaw / 32768.F * PI;
 	float rollFloat = (float)roll / 32768.F * PI;
 
-	float sinPitch = sin(pitchFloat);
-	float cosPitch = cos(pitchFloat);
+	float sinPitch = sinf(pitchFloat);
+	float cosPitch = cosf(pitchFloat);
 
-	float sinYaw = sin(yawFloat);
-	float cosYaw = cos(yawFloat);
+	float sinYaw = sinf(yawFloat);
+	float cosYaw = cosf(yawFloat);
 
-	float sinRoll = sin(rollFloat);
-	float cosRoll = cos(rollFloat);
+	float sinRoll = sinf(rollFloat);
+	float cosRoll = cosf(rollFloat);
 
 	forward.x = cosYaw * cosPitch;
 	forward.y = sinYaw * cosPitch;

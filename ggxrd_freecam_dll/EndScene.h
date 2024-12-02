@@ -27,6 +27,7 @@ public:
 	void setPresentFlag();
 	bool consumePresentFlag();
 	void clearContinuousScreenshotMode();
+	void onGifModeBlackBackgroundChanged();
 	EndScene_t orig_EndScene = nullptr;
 	std::mutex orig_EndSceneMutex;
 	Present_t orig_Present = nullptr;

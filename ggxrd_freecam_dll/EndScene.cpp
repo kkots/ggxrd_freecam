@@ -249,6 +249,17 @@ bool EndScene::endSceneOnlyProcessKeys() {
 			camera.darkenMode = true;
 			logwrap(fputs("Darken mode on\n", logfile));
 		}
+		onGifModeBlackBackgroundChanged();
+	}
+	if (!modDisabled && keyboard.combinationGotPressed(settings.togglePostEffectOnOff)) {
+		BOOL theValue = !game.postEffectOn();
+		game.postEffectOn() = theValue;
+		if (theValue) {
+			logwrap(fputs("Post Effect turned on\n", logfile));
+		}
+		else {
+			logwrap(fputs("Post Effect turned off\n", logfile));
+		}
 	}
 	if (!modDisabled && keyboard.combinationGotPressed(settings.hideOneOfTheSidesToggle)) {
 		if (hideOpponent) {
@@ -273,6 +284,7 @@ bool EndScene::endSceneOnlyProcessKeys() {
 		}
 		camera.isFreecamMode = false;
 		camera.darkenMode = false;
+		onGifModeBlackBackgroundChanged();
 		hud.hideHudMode = false;
 		freezeGame = false;
 		hideOpponent = false;
@@ -280,6 +292,7 @@ bool EndScene::endSceneOnlyProcessKeys() {
 	}
 	if (!trainingMode && !replayMode) {
 		camera.darkenMode = false;
+		onGifModeBlackBackgroundChanged();
 		hideOpponent = false;
 		game.everyoneInvulnerable = false;
 	}
@@ -506,4 +519,13 @@ std::vector<EndScene::HiddenEntity>::iterator EndScene::findHiddenEntity(char* e
 		}
 	}
 	return hiddenEntities.end();
+}
+
+void EndScene::onGifModeBlackBackgroundChanged() {
+	if (!settings.turnOffPostEffectWhenMakingBackgroundBlack) return;
+	BOOL theValue = game.postEffectOn();
+	BOOL whatTheValueShouldBe = !camera.darkenMode;
+	if (theValue != whatTheValueShouldBe) {
+		game.postEffectOn() = whatTheValueShouldBe;
+	}
 }

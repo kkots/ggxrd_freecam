@@ -39,6 +39,7 @@ public:
 	KeyComboSet freezeGameToggle;
 	KeyComboSet slowmoGameToggle;
 	KeyComboSet allowNextFrame;
+	KeyComboSet togglePostEffectOnOff;
 	float lookaroundSpeedMultiplier = 1.F;
 	float movementSpeedMultiplier = 1.F;
 	float rollMultiplier = 1.F;
@@ -52,6 +53,7 @@ public:
 	std::string screenshotPath;
 	bool allowContinuousScreenshotting = false;
 	bool dontUseScreenshotTransparency = false;
+	bool turnOffPostEffectWhenMakingBackgroundBlack = true;
 	int sideToHide = 0;
 
 	MultiplicationTable table;

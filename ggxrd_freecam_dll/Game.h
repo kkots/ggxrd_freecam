@@ -24,6 +24,7 @@ public:
 	determineHitType_t orig_determineHitType = nullptr;
 	std::mutex orig_determineHitTypeMutex;
 	bool everyoneInvulnerable = false;
+	BOOL& postEffectOn();
 private:
 	class HookHelp {
 		friend class Game;
@@ -49,6 +50,7 @@ private:
 	const char** gameDataPtr = nullptr;
 	unsigned slowmoSkipCounter = 0;
 	bool ignoreAllCalls = false;
+	BOOL* postEffectOnPtr = nullptr;
 };
 
 extern Game game;
