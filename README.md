@@ -91,13 +91,15 @@ You can use this mod to take transparent or non-transparent screenshots of the g
 
 ### Setting up the game to enable transparent screenshots
 
-To enable screenshots taken to be with transparent background, you need to go into the game's `Display settings` and set `Post-Effect` to `OFF`.
+To enable screenshots taken to be with transparent background, you need to go into the game's `Display settings` and set `Post-Effect` to `OFF` or the mod can turn it off for you automatically (read below).
 
 ![Screenshot can't be viewed](posteffect_off.jpg)
 
 Post-Effect set to Off seems to turn off anti-aliasing, but without it the trick won't work. Then you can load the mod and switch the `blackBackgroundToggle` (F2 is the default hotkey) to make the background black and that would actually make the background transparent - but you can't see that with a naked eye. You need to press "screenshotBtn" (F8, copies to clipboard by default) to take a screenshot and paste it into a graphical editor supporting transparency, like GIMP for example, in order to see transparency.  
 Transparency in the game is actually inverted, meaning the background is fully opaque while the characters are fully transparent. The screenshotter inverts the alpha channel to make it correct.  
-Only GIMP has been tested to support the PNG screenshot format that the mod produces, and this works on Windows and on Ubuntu/Linux, where Guilty Gear Xrd runs under Steam Proton.  
+Only GIMP has been tested to support the PNG screenshot format that the mod produces, and this works on Windows and on Ubuntu/Linux, where Guilty Gear Xrd runs under Steam Proton.
+
+To turn off `Post-Effect` automatically whenever you make the background black, you could set the `turnOffPostEffectWhenMakingBackgroundBlack` setting in the INI file to true (is true by default). Or, alternatively, you could use the `togglePostEffectsOnOff` keyboard shortcut, which is set in the INI file, to turn the Post-Effect on or off manually using a hotkey (the default hotkey is not set). Turning Post-Effect on/off this way does not require reloading the match! This is much faster than going to the main menu and changing it there!
 
 ### Screenshot saving location
 
