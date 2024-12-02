@@ -165,7 +165,7 @@ void Settings::readSettings() {
 	addKeyComboToParse(keyCombosToParse, "toggleHud", &toggleHud, "F1");
 	addKeyComboToParse(keyCombosToParse, "freezeGameToggle", &freezeGameToggle, "F3");
 	addKeyComboToParse(keyCombosToParse, "slowmoGameToggle", &slowmoGameToggle, "");
-	addKeyComboToParse(keyCombosToParse, "allowNextFrame", &allowNextFrame, "F5");
+	addKeyComboToParse(keyCombosToParse, "allowNextFrameKey", &allowNextFrameKey, "F5");
 	addKeyComboToParse(keyCombosToParse, "continuousScreenshotToggle", &continuousScreenshotToggle, "");
 	addKeyComboToParse(keyCombosToParse, "blackBackgroundToggle", &blackBackgroundToggle, "F2");
 	addKeyComboToParse(keyCombosToParse, "hideOneOfTheSidesToggle", &hideOneOfTheSidesToggle, "");

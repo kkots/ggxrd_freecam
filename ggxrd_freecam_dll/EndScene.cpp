@@ -194,7 +194,7 @@ bool EndScene::endSceneOnlyProcessKeys() {
 			logwrap(fputs("Slowmo game turned on\n", logfile));
 		}
 	}
-	bool allowNextFrameIsHeld = !modDisabled && keyboard.combinationIsHeld(settings.allowNextFrame);
+	bool allowNextFrameIsHeld = !modDisabled && keyboard.combinationIsHeld(settings.allowNextFrameKey);
 	if (allowNextFrameIsHeld) {
 		bool allowPress = false;
 		if (allowNextFrameBeenHeldFor == 0) {
@@ -210,7 +210,7 @@ bool EndScene::endSceneOnlyProcessKeys() {
 		}
 		if (trainingMode && allowPress) {
 			game.allowNextFrame = true;
-			logwrap(fputs("allowNextFrame pressed\n", logfile));
+			logwrap(fputs("allowNextFrameKey pressed\n", logfile));
 		}
 		++allowNextFrameBeenHeldFor;
 	}

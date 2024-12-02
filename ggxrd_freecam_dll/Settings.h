@@ -38,7 +38,7 @@ public:
 	KeyComboSet toggleHud;
 	KeyComboSet freezeGameToggle;
 	KeyComboSet slowmoGameToggle;
-	KeyComboSet allowNextFrame;
+	KeyComboSet allowNextFrameKey;
 	KeyComboSet togglePostEffectOnOff;
 	float lookaroundSpeedMultiplier = 1.F;
 	float movementSpeedMultiplier = 1.F;

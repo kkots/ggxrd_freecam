@@ -189,6 +189,7 @@ The tools provided in <https://github.com/kkots/GIFTools> allow renumbering PNG 
 ## Controls configuration
 
 If you wish to configure key and/or mouse combinations for the controls, create a text file named `ggxrd_freecam.ini` and place it in the directory where the game executable is. For example, for me my Steam version of the game is located at `...\SteamLibrary\steamapps\common\GUILTY GEAR Xrd -REVELATOR-\Binaries\Win32`.  
+Please note that keyboard controls don't work well in Japanese IME Hiragana or even plain English mode and possible in other languages (for example, pressing "1" when in Japanese Hiragana, then it doesn't work at all in Japanese English). So please use keyboard controls only with the plain English language.  
 Here's an example of the `.ini` file:
 
 ```ini
