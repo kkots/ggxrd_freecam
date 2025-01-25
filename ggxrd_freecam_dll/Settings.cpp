@@ -159,19 +159,43 @@ bool Settings::onDllMain() {
 	table.set(MULTIPLICATION_WHAT_PS4_SHOULDER, MULTIPLICATION_GOAL_CHANGE_FOV, 0.000025F);
 	table.set(MULTIPLICATION_WHAT_DPAD, MULTIPLICATION_GOAL_CHANGE_FOV, 0.5F);
 	
+	HMODULE modDll = GetModuleHandleA("ggxrd_freecam_dll.dll");
+	if (modDll && modDll != INVALID_HANDLE_VALUE) {
+		modDir.resize(2048, L'\0');
+		GetModuleFileNameW(modDll, &modDir.front(), 2048);
+		modDir.resize(wcslen(modDir.c_str()));
+		if (_wcsicmp(modDir.c_str() + modDir.size() - 22, L"\\ggxrd_freecam_dll.dll") == 0) {
+			modDir.resize(modDir.size() - 22);
+		}
+	}
+	
 	std::wstring currentDir = getCurrentDirectory();
-	settingsPath = currentDir + L"\\ggxrd_freecam.ini";
-	logwrap(fprintf(logfile, "INI file path: %ls\n", settingsPath.c_str()));
+	settingsPathGGExe = currentDir + L"\\ggxrd_freecam.ini";
+	settingsPathModDllDir = modDir + L"\\ggxrd_freecam.ini";
+	logwrap(fprintf(logfile, "INI file path in game executable's folder: %ls\n", settingsPathGGExe.c_str()));
+	logwrap(fprintf(logfile, "INI file path in mod's DLL's folder: %ls\n", settingsPathModDllDir.c_str()));
 
 
 	directoryChangeHandle = FindFirstChangeNotificationW(
 		currentDir.c_str(), // directory to watch 
 		FALSE,              // do not watch subtree 
 		FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE); // watch file name changes and last write date changes
-	if (directoryChangeHandle == INVALID_HANDLE_VALUE || !directoryChangeHandle) {
+	directoryChangeHandle2 = FindFirstChangeNotificationW(
+		modDir.c_str(), // directory to watch 
+		FALSE,              // do not watch subtree 
+		FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE); // watch file name changes and last write date changes
+	if (directoryChangeHandle == INVALID_HANDLE_VALUE || !directoryChangeHandle
+			|| directoryChangeHandle2 == INVALID_HANDLE_VALUE || !directoryChangeHandle2) {
 		WinError winErr;
 		logwrap(fprintf(logfile, "FindFirstChangeNotificationW failed: %s\n", winErr.getMessage()));
-		directoryChangeHandle = NULL;
+		if (directoryChangeHandle != INVALID_HANDLE_VALUE && directoryChangeHandle) {
+			FindCloseChangeNotification(directoryChangeHandle);
+			directoryChangeHandle = NULL;
+		}
+		if (directoryChangeHandle2 != INVALID_HANDLE_VALUE && directoryChangeHandle2) {
+			FindCloseChangeNotification(directoryChangeHandle2);
+			directoryChangeHandle2 = NULL;
+		}
 	}
 
 	readSettings();
@@ -182,6 +206,9 @@ bool Settings::onDllMain() {
 void Settings::onDllDetach() {
 	if (directoryChangeHandle) {
 		FindCloseChangeNotification(directoryChangeHandle);
+	}
+	if (directoryChangeHandle2) {
+		FindCloseChangeNotification(directoryChangeHandle2);
 	}
 }
 
@@ -261,10 +288,19 @@ void Settings::readSettings() {
 	char errorString[500];
 	char buf[1024];
 	FILE* file = NULL;
-	if (_wfopen_s(&file, settingsPath.c_str(), L"rt") || !file) {
+	if (_wfopen_s(&file, settingsPathGGExe.c_str(), L"rt") || !file) {
 		strerror_s(errorString, errno);
-		logwrap(fprintf(logfile, "Could not open INI file: %s\n", errorString));
-	} else {
+		logwrap(fprintf(logfile, "Could not open INI file 1: %s\n", errorString));
+		file = NULL;
+	}
+	if (!file && (
+			_wfopen_s(&file, settingsPathModDllDir.c_str(), L"rt") || !file
+	)) {
+		strerror_s(errorString, errno);
+		logwrap(fprintf(logfile, "Could not open INI file 2: %s\n", errorString));
+		file = NULL;
+	}
+	if (file) {
 		while (true) {
 			if (!fgets(buf, 1023, file)) {
 				if (ferror(file)) {
@@ -418,13 +454,28 @@ void Settings::addIntegerToParse(std::map<std::string, IntegerToParse>& map, std
 	map.insert({ toUppercase(name), {name, number, defaultValue} });
 }
 
-std::string Settings::toUppercase(std::string str) const {
+std::string Settings::toUppercase(const std::string& str) const {
 	std::string result;
 	result.reserve(str.size());
 	for (char c : str) {
 		result.push_back(toupper(c));
 	}
 	return result;
+}
+
+std::wstring Settings::toUppercase(const std::wstring& str) const {
+	std::wstring result;
+	result.reserve(str.size());
+	for (wchar_t c : str) {
+		result.push_back(towupper(c));
+	}
+	return result;
+}
+
+void Settings::toUppercaseInPlace(std::wstring& str) const {
+	for (wchar_t& c : str) {
+		c = towupper(c);
+	}
 }
 
 int Settings::findChar(const char* buf, char c) const {
@@ -434,6 +485,16 @@ int Settings::findChar(const char* buf, char c) const {
 		++ptr;
 	}
 	return -1;
+}
+
+int Settings::findCharRevW(const wchar_t* buf, wchar_t c) const {
+	int last = -1;
+	const wchar_t* ptr = buf;
+	while (*ptr != '\0') {
+		if (*ptr == c) last = ptr - buf;
+		++ptr;
+	}
+	return last;
 }
 
 void Settings::trim(std::string& str) const {
@@ -612,30 +673,23 @@ bool Settings::parseInteger(const char* keyName, const std::string& keyValue, in
 }
 
 void Settings::readSettingsIfChanged() {
-	if (!directoryChangeHandle) return;
-	DWORD dwWaitStatus;
-	if (lastCallFailedToGetTime) {
-		dwWaitStatus = WAIT_OBJECT_0;
-	}
-	else {
-		dwWaitStatus = WaitForSingleObject(directoryChangeHandle, 0);
-	}
-	if (dwWaitStatus == WAIT_OBJECT_0) {
-		FILETIME newTime;
-		if (!getLastWriteTime(settingsPath, &newTime)) {
-			lastCallFailedToGetTime = true;
-			return;
-		}
-		lastCallFailedToGetTime = false;
-		if (newTime.dwLowDateTime != lastSettingsWriteTime.dwLowDateTime
-			|| newTime.dwHighDateTime != lastSettingsWriteTime.dwHighDateTime) {
-			readSettings();
-		}
-		if (!FindNextChangeNotification(directoryChangeHandle)) {
+	if (!directoryChangeHandle || !directoryChangeHandle2) return;
+	HANDLE objects[2] { directoryChangeHandle, directoryChangeHandle2 };
+	DWORD dwWaitStatus = WaitForMultipleObjects(2, objects, FALSE, 0);
+	if (dwWaitStatus == WAIT_OBJECT_0 || dwWaitStatus == WAIT_OBJECT_0 + 1) {
+		readSettings();
+		if (dwWaitStatus == WAIT_OBJECT_0 && !FindNextChangeNotification(directoryChangeHandle)) {
 			WinError winErr;
 			logwrap(fprintf(logfile, "FindNextChangeNotification failed: %s\n", winErr.getMessage()));
 			FindCloseChangeNotification(directoryChangeHandle);
 			directoryChangeHandle = NULL;
+			return;
+		}
+		if (dwWaitStatus == WAIT_OBJECT_0 + 1 && !FindNextChangeNotification(directoryChangeHandle2)) {
+			WinError winErr;
+			logwrap(fprintf(logfile, "FindNextChangeNotification failed: %s\n", winErr.getMessage()));
+			FindCloseChangeNotification(directoryChangeHandle2);
+			directoryChangeHandle2 = NULL;
 			return;
 		}
 	}
@@ -670,25 +724,4 @@ std::wstring Settings::getCurrentDirectory() {
 		return std::wstring{};
 	}
 	return currentDir;
-}
-
-bool Settings::getLastWriteTime(const std::wstring& path, FILETIME* fileTime) {
-	HANDLE hFile = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (!hFile || hFile == INVALID_HANDLE_VALUE) {
-		WinError winErr;
-		logwrap(fprintf(logfile, "CreateFileW failed: %s. %.8x\n", winErr.getMessage(), winErr.code));;
-		return false;
-	}
-	FILETIME creationTime{ 0 };
-	FILETIME lastAccessTime{ 0 };
-	FILETIME lastWriteTime{ 0 };
-	if (!GetFileTime(hFile, &creationTime, &lastAccessTime, &lastWriteTime)) {
-		WinError winErr;
-		logwrap(fprintf(logfile, "GetFileTime failed: %s\n", winErr.getMessage()));
-		CloseHandle(hFile);
-		return false;
-	}
-	CloseHandle(hFile);
-	*fileTime = lastWriteTime;
-	return true;
 }

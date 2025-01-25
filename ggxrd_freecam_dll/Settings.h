@@ -133,6 +133,7 @@ private:
 	void readSettings();
 	int findMinCommentPos(const char* buf) const;
 	int findChar(const char* buf, char c) const;
+	int findCharRevW(const wchar_t* buf, wchar_t c) const;
 	void replaceChar(char* buf, char orig, char newChar) const;
 	void trim(std::string& str) const;
 	std::vector<std::string> split(const std::string& str, char c) const;
@@ -142,14 +143,17 @@ private:
 	bool parseInteger(const char* keyName, const std::string& keyValue, int& integer);
 	bool parseBoolean(const char* keyName, const std::string& keyValue, bool& integer);
 	std::string getKeyValue(const char* buf) const;
-	std::string toUppercase(std::string str) const;
+	std::string toUppercase(const std::string& str) const;
+	std::wstring toUppercase(const std::wstring& str) const;
+	void toUppercaseInPlace(std::wstring& str) const;
 	std::wstring getCurrentDirectory();
-	bool getLastWriteTime(const std::wstring& path, FILETIME* fileTime);
-	std::wstring settingsPath;
+	std::wstring settingsPathGGExe;
+	std::wstring settingsPathModDllDir;
 	bool firstSettingsParse = true;
 	FILETIME lastSettingsWriteTime{ 0 };
 	HANDLE directoryChangeHandle = NULL;
-	bool lastCallFailedToGetTime = false;
+	HANDLE directoryChangeHandle2 = NULL;
+	std::wstring modDir;
 };
 
 extern Settings settings;

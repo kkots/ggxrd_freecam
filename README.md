@@ -50,7 +50,7 @@ If it doesn't work, you can use the patcher:
 If you patch the game it will always load the DLL automatically on startup. The `ggxrd_freecam_patcher_linux` and `ggxrd_freecam_patcher` do exactly that (on Linux and Windows respectively) and must be launched directly, without Wine. The patcher on Ubuntu/Linux, when it asks, must be provided the full path to the game executable (`GuiltyGearXrd.exe`) without quotes. The Windows patcher will show a file selection dialog instead.  
 The patched game will now try to load the `ggxrd_freecam_overlay.dll` on startup. In order for the game to find the DLL it must be placed in the same directory as the game executable, which should be in Steam's directory, for example: `~/.steam/debian-installation/steamapps/common/GUILTY GEAR Xrd -REVELATOR-/Binaries/Win32`, where `~` is your home directory.  
 If the DLL is not found when the game launches, it will just run normally, without the mod.  
-Normally you can run the injector to unload the mod, but if for whatever reason you can't run on Linux, then there's no way to unload the mod. To solve this you can add the `.ini` file mentioned in `Controls configuration` section into the folder with the game executable and change the line `startDisabled = false` to `startDisabled = true` in it and use the `disableModToggle` (no default hotkey) hotkey to enable the mod when you need.
+Normally you can run the injector to unload the mod, but if for whatever reason you can't run on Linux, then there's no way to unload the mod. To solve this you can add the `.ini` file mentioned in `Controls configuration` section into the folder with the game executable (if it's not present there, then it will be read from the folder where ggxrd_freecam_dll.dll was when you injected it) and change the line `startDisabled = false` to `startDisabled = true` in it and use the `disableModToggle` (no default hotkey) hotkey to enable the mod when you need.
 
 If Steam Proton is taking forever to launch the game, patched or not, then rename the mod's dll and put the original, unpatched version of the game executable back, then try switching the Proton version in Steam's settings and agree to restart Steam. After restarting Steam will start downloading two things related to Guilty Gear Xrd and will launch GGXrd automatically (even though you didn't tell it to). GGXrd should work. Quit GGXrd. Place the patched version of the game executable and the mod's dll back and restart GGXrd. GGXrd will launch with the mod. Idk what causes this.
 
@@ -112,7 +112,7 @@ To turn off `Post-Effect` automatically whenever you make the background black, 
 
 ### Screenshot saving location
 
-By default the mod saves the screenshot into clipboard buffer, meaning you can paste it afterwards into a graphics program which supports transparency. In order to save screenshots to a file or directory you can add the `ggxrd_freecam.ini` file into the same folder as the game executable and write the path into the `screenshotPath` setting in it, without quotes. Now when you save multiple screenshots in a row, each consecutive one will get a number in its name, increasing from 1 to infinity. Screenshots are never cleaned up, so if you never clean them up yourself, you might fill up your hard drive.  
+By default the mod saves the screenshot into clipboard buffer, meaning you can paste it afterwards into a graphics program which supports transparency. In order to save screenshots to a file or directory you can add the `ggxrd_freecam.ini` file into the same folder as the game executable (if it is not present there, it will be read from the folder where ggxrd_freecam_dll.dll was when you injected it) and write the path into the `screenshotPath` setting in it, without quotes. Now when you save multiple screenshots in a row, each consecutive one will get a number in its name, increasing from 1 to infinity. Screenshots are never cleaned up, so if you never clean them up yourself, you might fill up your hard drive.  
 The only supported format by the mod is PNG and it uses `libpng` to encode that. You don't need to do anything to install `libpng` since it should come working inside the DLL already.  
 
 ### Continuous screenshotting
@@ -128,7 +128,7 @@ There's also a toggle you can use instead of holding down a button, and that tog
 
 ### Non-transparent screenshotting
 
-To take regular, non-transparency-enabled screenshots you can set the `dontUseScreenshotTransparency` setting to `true` in the `.ini` file (which must be placed into the game's folder).
+To take regular, non-transparency-enabled screenshots you can set the `dontUseScreenshotTransparency` setting to `true` in the `.ini` file (which must be placed into the game's folder. If it's not present there, it will be read from the folder where the mod's DLL was when you injected it).
 
 ### Converting PNGs into WEBP animation with transparency with ffmpeg
 
@@ -198,6 +198,7 @@ The tools provided in <https://github.com/kkots/GIFTools> allow renumbering PNG 
 ## Controls configuration
 
 If you wish to configure key and/or mouse combinations for the controls, create a text file named `ggxrd_freecam.ini` and place it in the directory where the game executable is. For example, for me my Steam version of the game is located at `...\SteamLibrary\steamapps\common\GUILTY GEAR Xrd -REVELATOR-\Binaries\Win32`.  
+If the INI file is not found in the game executable's folder, then it will be read from the folder that contained the mod's DLL at the time when you injected it.  
 Please note that keyboard controls don't work well in Japanese IME Hiragana or even plain English mode and possibly in other languages (for example, pressing "1" when in Japanese Hiragana, then it doesn't work at all in Japanese English). So please use keyboard controls only with the plain English language.  
 Here's an example of the `.ini` file:
 
@@ -205,6 +206,7 @@ Here's an example of the `.ini` file:
 ; To configure camera hotkeys place this file in the folder with the game executable
 ; For example it could be C:\Something\SteamLibrary\steamapps\common\GUILTY GEAR Xrd -REVELATOR-\Binaries\Win32
 ; You don't need to reload the mod when you change this file - it re-reads this settings file automatically when it changes.
+; If the INI file is not present there, it will be read from the folder in which the DLL was when you injected it.
 ; Available keys:
 ; Backspace, Tab, Enter, PauseBreak, CapsLock, Escape, Space, PageUp, PageDown, End, Home, ArrowLeft, ArrowUp, ArrowRight, ArrowDown, PrintScreen, Insert Delete, Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9, NumMultiply, NumAdd, NumSubtract, NumDecimal, NumDivide, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, NumLock, ScrollLock, Colon, Plus, Minus, Comma, Period, Slash, Tilde, OpenSquareBracket, Backslash, CloseSquareBracket, Quote, Backslash2, LeftClick, RightClick, MiddleClick, ThumbMouseClick, ThumbMouseClick2, MouseMoveLeft, MouseMoveUp, MouseMoveRight, MouseMoveDown, MouseWheelUp, MouseWheelDown, 0123456789, ABCDEFGHIJKLMNOPQRSTUVWXYZ, Shift, Ctrl, Alt, JoystickBtn1, JoystickBtn2, JoystickBtn3, JoystickBtn4, JoystickLeftTrigger, JoystickRightTrigger, JoystickLeftTrigger2, JoystickRightTrigger2, JoystickBtn9, JoystickBtn10, JoystickBtn11, JoystickBtn12, JoystickBtn13, JoystickBtn14, JoystickBtn15, JoystickBtn16, LeftStickLeft, LeftStickUp, LeftStickRight, LeftStickDown, DPadLeft, DPadUp, DPadRight, DPadDown, PS4DualshockLeftShoulderPressure, PS4DualshockRightShoulderPressure, PS4DualshockRightStickLeft, PS4DualshockRightStickUp, PS4DualshockRightStickRight, PS4DualshockRightStickDown, XboxTypeSRightStickLeft, XboxTypeSRightStickUp, XboxTypeSRightStickRight, XboxTypeSRightStickDown
 ; You can specify key and key + mouse combinations by separating key names with the '+' sign.
@@ -432,3 +434,4 @@ After setting UNICODE support correctly and adding dependencies you can build th
 - 24'th November 2023 - fixed crash when changing resolutions while the mod is loaded.
 - 21'st January 2024 - fixed a mistake in one of the field names in the example .ini
 - 23'rd January 2025 - added gamepad controls
+- 25'th January 2025 - now can read INI file from the folder where the mod's DLL was when you injected it, if it is not found in the game executable's folder. You can place the INI file into the game executable's folder at any time to have it be read from there again.
