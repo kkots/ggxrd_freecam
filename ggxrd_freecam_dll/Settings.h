@@ -11,6 +11,40 @@ const int MOUSE_MOVE_RIGHT = 0x103;
 const int MOUSE_MOVE_DOWN = 0x104;
 const int MOUSE_WHEEL_UP = 0x105;
 const int MOUSE_WHEEL_DOWN = 0x106;
+const int JOY_BTN_0 = 0x107;
+const int JOY_BTN_1 = 0x108;
+const int JOY_BTN_2 = 0x109;
+const int JOY_BTN_3 = 0x10a;
+const int JOY_BTN_4 = 0x10b;
+const int JOY_BTN_5 = 0x10c;
+const int JOY_BTN_6 = 0x10d;
+const int JOY_BTN_7 = 0x10e;
+const int JOY_BTN_8 = 0x10f;
+const int JOY_BTN_9 = 0x110;
+const int JOY_BTN_10 = 0x111;
+const int JOY_BTN_11 = 0x112;
+const int JOY_BTN_12 = 0x113;
+const int JOY_BTN_13 = 0x114;
+const int JOY_BTN_14 = 0x115;
+const int JOY_BTN_15 = 0x116;
+const int JOY_LEFT_STICK_LEFT = 0x117;  // lX, lY
+const int JOY_LEFT_STICK_UP = 0x118;
+const int JOY_LEFT_STICK_RIGHT = 0x119;
+const int JOY_LEFT_STICK_DOWN = 0x11a;
+const int JOY_DPAD_LEFT = 0x11b;
+const int JOY_DPAD_UP = 0x11c;
+const int JOY_DPAD_RIGHT = 0x11d;
+const int JOY_DPAD_DOWN = 0x11e;
+const int JOY_PS4_DUALSHOCK_LEFT_SHOULDER_PRESSURE = 0x11f;  // lRx
+const int JOY_PS4_DUALSHOCK_RIGHT_SHOULDER_PRESSURE = 0x120;  // lRy
+const int JOY_PS4_DUALSHOCK_RIGHT_STICK_LEFT = 0x11f;  // lZ, lRz
+const int JOY_PS4_DUALSHOCK_RIGHT_STICK_UP = 0x120;
+const int JOY_PS4_DUALSHOCK_RIGHT_STICK_RIGHT = 0x121;
+const int JOY_PS4_DUALSHOCK_RIGHT_STICK_DOWN = 0x122;
+const int JOY_XBOX_TYPE_S_RIGHT_STICK_LEFT = 0x123;  // lRx, lRy
+const int JOY_XBOX_TYPE_S_RIGHT_STICK_UP = 0x124;
+const int JOY_XBOX_TYPE_S_RIGHT_STICK_RIGHT = 0x125;
+const int JOY_XBOX_TYPE_S_RIGHT_STICK_DOWN = 0x126;
 
 class Settings
 {
@@ -45,6 +79,9 @@ public:
 	float rollMultiplier = 1.F;
 	float fovChangeSpeedMultiplier = 1.F;
 	int slowmoTimes = 3;
+	int leftStickDeadzone = 0;
+	int ps4DualshockRightStickDeadzone = 0;
+	int xboxTypeSRightStickDeadzone = 0;
 	KeyComboSet disableModToggle;
 	KeyComboSet continuousScreenshotToggle;
 	KeyComboSet blackBackgroundToggle;

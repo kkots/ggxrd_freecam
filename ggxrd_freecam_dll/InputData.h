@@ -16,5 +16,14 @@ struct InputData {
 	int dy = 0;
 	int wheelDelta = 0;  // > 0 is up, < 0 is down
 	std::vector<KeyInput> keyInputs;
+	int leftStickX = 0;
+	int leftStickY = 0;
+	int ps4RightStickX = 0;
+	int ps4RightStickY = 0;
+	int xboxTypeSRightStickX = 0;
+	int xboxTypeSRightStickY = 0;
+	int ps4LeftShoulder = 0;
+	int ps4RightShoulder = 0;
+	int dpad = 0;
 	void clear();
 };

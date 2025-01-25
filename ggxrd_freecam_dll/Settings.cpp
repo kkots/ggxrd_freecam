@@ -74,12 +74,48 @@ bool Settings::onDllMain() {
 	addKey("LeftClick", VK_LBUTTON);
 	addKey("RightClick", VK_RBUTTON);
 	addKey("MiddleClick", VK_MBUTTON);
+	addKey("ThumbMouseClick", VK_XBUTTON1);
+	addKey("ThumbMouseClick2", VK_XBUTTON2);
 	addKey("MouseMoveLeft", MOUSE_MOVE_LEFT);
 	addKey("MouseMoveUp", MOUSE_MOVE_UP);
 	addKey("MouseMoveRight", MOUSE_MOVE_RIGHT);
 	addKey("MouseMoveDown", MOUSE_MOVE_DOWN);
 	addKey("MouseWheelUp", MOUSE_WHEEL_UP);
 	addKey("MouseWheelDown", MOUSE_WHEEL_DOWN);
+	addKey("JoystickBtn1", JOY_BTN_0);
+	addKey("JoystickBtn2", JOY_BTN_1);
+	addKey("JoystickBtn3", JOY_BTN_2);
+	addKey("JoystickBtn4", JOY_BTN_3);
+	addKey("JoystickLeftTrigger", JOY_BTN_4);
+	addKey("JoystickRightTrigger", JOY_BTN_5);
+	addKey("JoystickLeftTrigger2", JOY_BTN_6);
+	addKey("JoystickRightTrigger2", JOY_BTN_7);
+	addKey("JoystickBtn9", JOY_BTN_8);
+	addKey("JoystickBtn10", JOY_BTN_9);
+	addKey("JoystickBtn11", JOY_BTN_10);
+	addKey("JoystickBtn12", JOY_BTN_11);
+	addKey("JoystickBtn13", JOY_BTN_12);
+	addKey("JoystickBtn14", JOY_BTN_13);
+	addKey("JoystickBtn15", JOY_BTN_14);
+	addKey("JoystickBtn16", JOY_BTN_15);
+	addKey("LeftStickLeft", JOY_LEFT_STICK_LEFT);
+	addKey("LeftStickUp", JOY_LEFT_STICK_UP);
+	addKey("LeftStickRight", JOY_LEFT_STICK_RIGHT);
+	addKey("LeftStickDown", JOY_LEFT_STICK_DOWN);
+	addKey("DPadLeft", JOY_DPAD_LEFT);
+	addKey("DPadUp", JOY_DPAD_UP);
+	addKey("DPadRight", JOY_DPAD_RIGHT);
+	addKey("DPadDown", JOY_DPAD_DOWN);
+	addKey("PS4DualshockLeftShoulderPressure", JOY_PS4_DUALSHOCK_LEFT_SHOULDER_PRESSURE);
+	addKey("PS4DualshockRightShoulderPressure", JOY_PS4_DUALSHOCK_RIGHT_SHOULDER_PRESSURE);
+	addKey("PS4DualshockRightStickLeft", JOY_PS4_DUALSHOCK_RIGHT_STICK_LEFT);
+	addKey("PS4DualshockRightStickUp", JOY_PS4_DUALSHOCK_RIGHT_STICK_UP);
+	addKey("PS4DualshockRightStickRight", JOY_PS4_DUALSHOCK_RIGHT_STICK_RIGHT);
+	addKey("PS4DualshockRightStickDown", JOY_PS4_DUALSHOCK_RIGHT_STICK_DOWN);
+	addKey("XboxTypeSRightStickLeft", JOY_XBOX_TYPE_S_RIGHT_STICK_LEFT);
+	addKey("XboxTypeSRightStickUp", JOY_XBOX_TYPE_S_RIGHT_STICK_UP);
+	addKey("XboxTypeSRightStickRight", JOY_XBOX_TYPE_S_RIGHT_STICK_RIGHT);
+	addKey("XboxTypeSRightStickDown", JOY_XBOX_TYPE_S_RIGHT_STICK_DOWN);
 
 	addKeyRange('0', '9');
 	addKeyRange('A', 'Z');
@@ -94,13 +130,35 @@ bool Settings::onDllMain() {
 	table.set(MULTIPLICATION_WHAT_KEYBOARD, MULTIPLICATION_GOAL_ROLL, 200.F);
 	table.set(MULTIPLICATION_WHAT_WHEEL, MULTIPLICATION_GOAL_LOOK, 3.F);
 	table.set(MULTIPLICATION_WHAT_WHEEL, MULTIPLICATION_GOAL_ROLL, 3.F);
+	table.set(MULTIPLICATION_WHAT_LEFT_STICK, MULTIPLICATION_GOAL_LOOK, 0.01F);
+	table.set(MULTIPLICATION_WHAT_LEFT_STICK, MULTIPLICATION_GOAL_ROLL, 0.02F);
+	table.set(MULTIPLICATION_WHAT_PS4_RIGHT_STICK, MULTIPLICATION_GOAL_LOOK, 0.01F);
+	table.set(MULTIPLICATION_WHAT_PS4_RIGHT_STICK, MULTIPLICATION_GOAL_ROLL, 0.02F);
+	table.set(MULTIPLICATION_WHAT_XBOX_TYPE_S_RIGHT_STICK, MULTIPLICATION_GOAL_LOOK, 0.01F);
+	table.set(MULTIPLICATION_WHAT_XBOX_TYPE_S_RIGHT_STICK, MULTIPLICATION_GOAL_ROLL, 0.02F);
+	table.set(MULTIPLICATION_WHAT_PS4_SHOULDER, MULTIPLICATION_GOAL_LOOK, 0.005F);
+	table.set(MULTIPLICATION_WHAT_PS4_SHOULDER, MULTIPLICATION_GOAL_ROLL, 0.01F);
+	table.set(MULTIPLICATION_WHAT_DPAD, MULTIPLICATION_GOAL_LOOK, 100.F);
+	table.set(MULTIPLICATION_WHAT_DPAD, MULTIPLICATION_GOAL_ROLL, 200.F);
 
 	table.set(MULTIPLICATION_WHAT_MOUSE, MULTIPLICATION_GOAL_CAMERA_MOVE, 1.F);
 	table.set(MULTIPLICATION_WHAT_KEYBOARD, MULTIPLICATION_GOAL_CAMERA_MOVE, 2.F);
 	table.set(MULTIPLICATION_WHAT_WHEEL, MULTIPLICATION_GOAL_CAMERA_MOVE, 0.5F);
+	table.set(MULTIPLICATION_WHAT_LEFT_STICK, MULTIPLICATION_GOAL_CAMERA_MOVE, 0.00025F);
+	table.set(MULTIPLICATION_WHAT_PS4_RIGHT_STICK, MULTIPLICATION_GOAL_CAMERA_MOVE, 0.00025F);
+	table.set(MULTIPLICATION_WHAT_XBOX_TYPE_S_RIGHT_STICK, MULTIPLICATION_GOAL_CAMERA_MOVE, 0.00025F);
+	table.set(MULTIPLICATION_WHAT_PS4_SHOULDER, MULTIPLICATION_GOAL_CAMERA_MOVE, 0.000125F);
+	table.set(MULTIPLICATION_WHAT_DPAD, MULTIPLICATION_GOAL_CAMERA_MOVE, 2.F);
 
+	table.set(MULTIPLICATION_WHAT_MOUSE, MULTIPLICATION_GOAL_CHANGE_FOV, 0.1F);
+	table.set(MULTIPLICATION_WHAT_KEYBOARD, MULTIPLICATION_GOAL_CHANGE_FOV, 0.5F);
 	table.set(MULTIPLICATION_WHAT_WHEEL, MULTIPLICATION_GOAL_CHANGE_FOV, 0.04F);
-
+	table.set(MULTIPLICATION_WHAT_LEFT_STICK, MULTIPLICATION_GOAL_CHANGE_FOV, 0.00005F);
+	table.set(MULTIPLICATION_WHAT_PS4_RIGHT_STICK, MULTIPLICATION_GOAL_CHANGE_FOV, 0.00005F);
+	table.set(MULTIPLICATION_WHAT_XBOX_TYPE_S_RIGHT_STICK, MULTIPLICATION_GOAL_CHANGE_FOV, 0.00005F);
+	table.set(MULTIPLICATION_WHAT_PS4_SHOULDER, MULTIPLICATION_GOAL_CHANGE_FOV, 0.000025F);
+	table.set(MULTIPLICATION_WHAT_DPAD, MULTIPLICATION_GOAL_CHANGE_FOV, 0.5F);
+	
 	std::wstring currentDir = getCurrentDirectory();
 	settingsPath = currentDir + L"\\ggxrd_freecam.ini";
 	logwrap(fprintf(logfile, "INI file path: %ls\n", settingsPath.c_str()));
@@ -186,6 +244,9 @@ void Settings::readSettings() {
 	std::map<std::string, IntegerToParse> integersToParse;
 	addIntegerToParse(integersToParse, "slowmoTimes", &slowmoTimes, 3);
 	addIntegerToParse(integersToParse, "sideToHide", &sideToHide, 1);
+	addIntegerToParse(integersToParse, "leftStickDeadzone", &leftStickDeadzone, 1536);
+	addIntegerToParse(integersToParse, "ps4DualshockRightStickDeadzone", &ps4DualshockRightStickDeadzone, 1536);
+	addIntegerToParse(integersToParse, "xboxTypeSRightStickDeadzone", &xboxTypeSRightStickDeadzone, 1536);
 
 	bool startDisabledParsed = false;
 
@@ -263,6 +324,52 @@ void Settings::readSettings() {
 				parseKeys("moveCameraUp", "V", moveCameraUp);
 				parseKeys("moveCameraUp", "B", moveCameraUp);
 				parseKeys("moveCameraUp", "N", moveCameraUp);
+				parseKeys("moveCameraUp", "JoystickLeftTrigger", moveCameraUp);
+			} else if (it->second.keyCombo == &moveCameraDown) {
+				parseKeys("moveCameraDown", "Space", moveCameraDown);
+				parseKeys("moveCameraDown", "JoystickRightTrigger", moveCameraDown);
+			} else if (it->second.keyCombo == &moveCameraForward) {
+				parseKeys("moveCameraForward", "T", moveCameraForward);
+				parseKeys("moveCameraForward", "DPadUp", moveCameraForward);
+			} else if (it->second.keyCombo == &moveCameraBackwards) {
+				parseKeys("moveCameraBackwards", "G", moveCameraBackwards);
+				parseKeys("moveCameraBackwards", "DPadDown", moveCameraBackwards);
+			} else if (it->second.keyCombo == &moveCameraLeft) {
+				parseKeys("moveCameraLeft", "F", moveCameraLeft);
+				parseKeys("moveCameraLeft", "DPadLeft", moveCameraLeft);
+			} else if (it->second.keyCombo == &moveCameraRight) {
+				parseKeys("moveCameraRight", "H", moveCameraRight);
+				parseKeys("moveCameraRight", "DPadRight", moveCameraRight);
+			} else if (it->second.keyCombo == &lookLeft) {
+				parseKeys("lookLeft", "MouseMoveLeft", lookLeft);
+				parseKeys("lookLeft", "LeftStickLeft", lookLeft);
+			} else if (it->second.keyCombo == &lookUp) {
+				parseKeys("lookUp", "MouseMoveUp", lookUp);
+				parseKeys("lookUp", "LeftStickUp", lookUp);
+			} else if (it->second.keyCombo == &lookRight) {
+				parseKeys("lookRight", "MouseMoveRight", lookRight);
+				parseKeys("lookRight", "LeftStickRight", lookRight);
+			} else if (it->second.keyCombo == &lookDown) {
+				parseKeys("lookDown", "MouseMoveDown", lookDown);
+				parseKeys("lookDown", "LeftStickDown", lookDown);
+			} else if (it->second.keyCombo == &rollLeft) {
+				parseKeys("rollLeft", "PageUp", rollLeft);
+				parseKeys("rollLeft", "JoystickLeftTrigger2", rollLeft);
+			} else if (it->second.keyCombo == &rollRight) {
+				parseKeys("rollRight", "PageDown", rollRight);
+				parseKeys("rollRight", "JoystickRightTrigger2", rollRight);
+			} else if (it->second.keyCombo == &fovDecrease) {
+				parseKeys("fovDecrease", "MouseWheelUp", fovDecrease);
+				parseKeys("fovDecrease", "JoystickBtn2", fovDecrease);
+			} else if (it->second.keyCombo == &fovIncrease) {
+				parseKeys("fovIncrease", "MouseWheelDown", fovIncrease);
+				parseKeys("fovIncrease", "JoystickBtn3", fovIncrease);
+			} else if (it->second.keyCombo == &resetRollFov) {
+				parseKeys("resetRollFov", "Home", resetRollFov);
+				parseKeys("resetRollFov", "JoystickBtn4", resetRollFov);
+			} else if (it->second.keyCombo == &screenshotBtn) {
+				parseKeys("screenshotBtn", "F8", screenshotBtn);
+				parseKeys("screenshotBtn", "JoystickBtn1", screenshotBtn);
 			} else {
 				parseKeys(it->second.name.c_str(), it->second.defaultValue, *it->second.keyCombo);
 			}

@@ -6,6 +6,7 @@
 #include "logging.h"
 #include "Settings.h"
 #include <hidusage.h>
+#include <dinput.h>
 
 using namespace std::literals;
 
@@ -42,7 +43,25 @@ bool Controls::onDllMain() {
 			&orig_SetCursorVisibilityMutex,
 			"SetCursorVisibility");
 	}
-
+	
+	// ghidra sig: 69 ff fc 01 00 00 03 3d ?? ?? ?? ?? 68 10 01 00 00
+	orig_ProcessInputs = (ProcessInputs_t)sigscanOffset(
+		"GuiltyGearXrd.exe",
+		"\x69\xff\xfc\x01\x00\x00\x03\x3d\x00\x00\x00\x00\x68\x10\x01\x00\x00",
+		"xxxxxxxx????xxxxx",
+		{ -0x7c },
+		&error, "ProcessInputs");
+	if (orig_ProcessInputs) {
+		UWindowsClient_Joysticks = *(BYTE**)((BYTE*)orig_ProcessInputs + 0x84);
+	}
+	if (orig_ProcessInputs) {
+		void(HookHelp::*ProcessInputsHookPtr)(float DeltaTime) = &HookHelp::ProcessInputsHook;
+		detouring.attach(&(PVOID&)(orig_ProcessInputs),
+			(PVOID&)ProcessInputsHookPtr,
+			&orig_ProcessInputsMutex,
+			"ProcessInputs");
+	}
+	
 	inputData.keyInputs.reserve(10);
 
 	return !error;
@@ -254,6 +273,15 @@ void Controls::getInputData(InputData& destination) {
 	destination.dy += inputData.dy;
 	destination.keyInputs.insert(destination.keyInputs.end(), inputData.keyInputs.begin(), inputData.keyInputs.end());
 	destination.wheelDelta += inputData.wheelDelta;
+	destination.leftStickX = inputData.leftStickX;
+	destination.leftStickY = inputData.leftStickY;
+	destination.ps4RightStickX = inputData.ps4RightStickX;
+	destination.ps4RightStickY = inputData.ps4RightStickY;
+	destination.xboxTypeSRightStickX = inputData.xboxTypeSRightStickX;
+	destination.xboxTypeSRightStickY = inputData.xboxTypeSRightStickY;
+	destination.ps4LeftShoulder = inputData.ps4LeftShoulder;
+	destination.ps4RightShoulder = inputData.ps4RightShoulder;
+	destination.dpad = inputData.dpad;
 	inputData.clear();
 }
 
@@ -262,4 +290,72 @@ bool Controls::toggleMagnetCursorMode() {
 	std::unique_lock<std::mutex> guard(magnetCursorModeMutex);
 	setMagnetCursorMode(thisWindow, !magnetCursorMode);
 	return magnetCursorMode;
+}
+
+void Controls::HookHelp::ProcessInputsHook(float DeltaTime) {
+	controls.ProcessInputsHook((BYTE*)this, DeltaTime);
+}
+
+void Controls::ProcessInputsHook(BYTE* thisArg, float DeltaTime) {
+	
+	static DIJOYSTATE2 oldState { 0 };
+	
+	{
+		std::unique_lock<std::mutex> guard(orig_ProcessInputsMutex);
+		orig_ProcessInputs((char*)thisArg, DeltaTime);
+	}
+	
+	int ArrayNum = *(int*)(UWindowsClient_Joysticks + 4);
+	BYTE* FJoystickInfo = *(BYTE**)UWindowsClient_Joysticks;
+	while (ArrayNum >= 0) {
+		if (*(void**)FJoystickInfo != nullptr  // LPDIRECTINPUTDEVICE8W DirectInput8Joystick
+				&& *(BOOL*)(FJoystickInfo + 0x1f0)) {  // BOOL bIsConnected
+			break;
+		}
+		
+		FJoystickInfo += 0x1fc;
+		--ArrayNum;
+	}
+	
+	if (ArrayNum == 0) {
+		std::unique_lock<std::mutex> guard(inputDataMutex);
+		inputData.leftStickX = 32767;
+		inputData.leftStickY = 32767;
+		inputData.ps4RightStickX = 32767;
+		inputData.ps4RightStickY = 32767;
+		inputData.xboxTypeSRightStickX = 32767;
+		inputData.xboxTypeSRightStickY = 32767;
+		inputData.ps4LeftShoulder = 0;
+		inputData.ps4RightShoulder = 0;
+		inputData.dpad = -1;
+		for (int i = 0; i < 16; ++i) {
+			if (oldState.rgbButtons[i]) {
+				inputData.keyInputs.push_back({ KEY_INPUT_TYPE_RELEASED, JOY_BTN_0 + i });
+				oldState.rgbButtons[i] = 0;
+			}
+		}
+		return;
+	}
+	
+	DIJOYSTATE2* PreviousState = (DIJOYSTATE2*)(FJoystickInfo + 0xd0);
+	
+	std::unique_lock<std::mutex> guard(inputDataMutex);
+	inputData.leftStickX = PreviousState->lX;
+	inputData.leftStickY = PreviousState->lY;
+	inputData.ps4RightStickX = PreviousState->lZ;
+	inputData.ps4RightStickY = PreviousState->lRz;
+	inputData.xboxTypeSRightStickX = PreviousState->lRx;
+	inputData.xboxTypeSRightStickY = PreviousState->lRy;
+	inputData.ps4LeftShoulder = PreviousState->lRx;
+	inputData.ps4RightShoulder = PreviousState->lRy;
+	inputData.dpad = PreviousState->rgdwPOV[0];
+	for (int i = 0; i < 16; ++i) {
+		if (!oldState.rgbButtons[i] && PreviousState->rgbButtons[i]) {
+			inputData.keyInputs.push_back({ KEY_INPUT_TYPE_PRESSED, JOY_BTN_0 + i });
+			oldState.rgbButtons[i] = PreviousState->rgbButtons[i];
+		} else if (oldState.rgbButtons[i] && !PreviousState->rgbButtons[i]) {
+			inputData.keyInputs.push_back({ KEY_INPUT_TYPE_RELEASED, JOY_BTN_0 + i });
+			oldState.rgbButtons[i] = PreviousState->rgbButtons[i];
+		}
+	}
 }

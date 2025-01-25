@@ -132,6 +132,103 @@ bool EndScene::endSceneOnlyProcessKeys() {
 	if (inputData.wheelDelta < 0) {
 		tempPressKey(MOUSE_WHEEL_DOWN);
 	}
+	if (inputData.dpad != -1 && inputData.dpad != 65535) {
+		if (inputData.dpad == 0) {
+			tempPressKey(JOY_DPAD_UP);
+		} else if (inputData.dpad == 4500) {
+			tempPressKey(JOY_DPAD_UP);
+			tempPressKey(JOY_DPAD_RIGHT);
+		} else if (inputData.dpad == 9000) {
+			tempPressKey(JOY_DPAD_RIGHT);
+		} else if (inputData.dpad == 13500) {
+			tempPressKey(JOY_DPAD_RIGHT);
+			tempPressKey(JOY_DPAD_DOWN);
+		} else if (inputData.dpad == 18000) {
+			tempPressKey(JOY_DPAD_DOWN);
+		} else if (inputData.dpad == 22500) {
+			tempPressKey(JOY_DPAD_DOWN);
+			tempPressKey(JOY_DPAD_LEFT);
+		} else if (inputData.dpad == 27000) {
+			tempPressKey(JOY_DPAD_LEFT);
+		} else if (inputData.dpad == 31500) {
+			tempPressKey(JOY_DPAD_LEFT);
+			tempPressKey(JOY_DPAD_UP);
+		}
+	}
+	
+	if (inputData.leftStickX >= 32767 - settings.leftStickDeadzone
+			&& inputData.leftStickX <= 32767 + settings.leftStickDeadzone) {
+		inputData.leftStickX = 32767;
+	}
+	if (inputData.leftStickY >= 32767 - settings.leftStickDeadzone
+			&& inputData.leftStickY <= 32767 + settings.leftStickDeadzone) {
+		inputData.leftStickY = 32767;
+	}
+	
+	if (inputData.ps4RightStickX >= 32767 - settings.ps4DualshockRightStickDeadzone
+			&& inputData.ps4RightStickX <= 32767 + settings.ps4DualshockRightStickDeadzone) {
+		inputData.ps4RightStickX = 32767;
+	}
+	if (inputData.ps4RightStickY >= 32767 - settings.ps4DualshockRightStickDeadzone
+			&& inputData.ps4RightStickY <= 32767 + settings.ps4DualshockRightStickDeadzone) {
+		inputData.ps4RightStickY = 32767;
+	}
+	
+	if (inputData.xboxTypeSRightStickX >= 32767 - settings.xboxTypeSRightStickDeadzone
+			&& inputData.xboxTypeSRightStickX <= 32767 + settings.xboxTypeSRightStickDeadzone) {
+		inputData.xboxTypeSRightStickX = 32767;
+	}
+	if (inputData.xboxTypeSRightStickY >= 32767 - settings.xboxTypeSRightStickDeadzone
+			&& inputData.xboxTypeSRightStickY <= 32767 + settings.xboxTypeSRightStickDeadzone) {
+		inputData.xboxTypeSRightStickY = 32767;
+	}
+	
+	if (inputData.leftStickX > 32767) {
+		tempPressKey(JOY_LEFT_STICK_RIGHT);
+	}
+	if (inputData.leftStickX < 32767) {
+		tempPressKey(JOY_LEFT_STICK_LEFT);
+	}
+	if (inputData.leftStickY > 32767) {
+		tempPressKey(JOY_LEFT_STICK_DOWN);
+	}
+	if (inputData.leftStickY < 32767) {
+		tempPressKey(JOY_LEFT_STICK_UP);
+	}
+	
+	if (inputData.ps4RightStickX > 32767) {
+		tempPressKey(JOY_PS4_DUALSHOCK_RIGHT_STICK_RIGHT);
+	}
+	if (inputData.ps4RightStickX < 32767) {
+		tempPressKey(JOY_PS4_DUALSHOCK_RIGHT_STICK_LEFT);
+	}
+	if (inputData.ps4RightStickY > 32767) {
+		tempPressKey(JOY_PS4_DUALSHOCK_RIGHT_STICK_DOWN);
+	}
+	if (inputData.ps4RightStickY < 32767) {
+		tempPressKey(JOY_PS4_DUALSHOCK_RIGHT_STICK_UP);
+	}
+	
+	if (inputData.xboxTypeSRightStickX > 32767) {
+		tempPressKey(JOY_XBOX_TYPE_S_RIGHT_STICK_RIGHT);
+	}
+	if (inputData.xboxTypeSRightStickX < 32767) {
+		tempPressKey(JOY_XBOX_TYPE_S_RIGHT_STICK_LEFT);
+	}
+	if (inputData.xboxTypeSRightStickY > 32767) {
+		tempPressKey(JOY_XBOX_TYPE_S_RIGHT_STICK_DOWN);
+	}
+	if (inputData.xboxTypeSRightStickY < 32767) {
+		tempPressKey(JOY_XBOX_TYPE_S_RIGHT_STICK_UP);
+	}
+	
+	if (inputData.ps4LeftShoulder) {
+		tempPressKey(JOY_PS4_DUALSHOCK_LEFT_SHOULDER_PRESSURE);
+	}
+	if (inputData.ps4RightShoulder) {
+		tempPressKey(JOY_PS4_DUALSHOCK_RIGHT_SHOULDER_PRESSURE);
+	}
+	
 	for (auto it = inputData.keyInputs.begin(); it != inputData.keyInputs.end(); ++it) {
 		if (it->type == KEY_INPUT_TYPE_PRESSED) {
 			keyboard.pressKey(it->virtualKeyCode);

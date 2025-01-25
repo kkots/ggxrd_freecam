@@ -62,7 +62,7 @@ Default controls are:
 - Right-click anywhere on Guilty Gear's window: same as Left-click, except when exiting freecam mode the camera will remain frozen;
 - F1: toggle (show/hide) HUD. Doesn't work on all of HUD elements, you may hide the remaining HUD elements using the game's built-in menus and ways to hide HUD;
 
-While the freecam mode is on:
+Keyboard controls for when in freecam mode:
 
 - Move mouse: look around;
 - TFGH: move camera around the space;
@@ -73,6 +73,15 @@ While the freecam mode is on:
 - Home: reset roll and FOV to their default values;
 - Mouse wheel up: decrease FOV (field of view). This makes everything bigger;
 - Mouse wheel down: increase FOV (field of view). This makes everything smaller;
+
+Gamepad controls for when in freecam mode:
+
+- Left stick: look around;
+- D-pad: move camera around in space in the horizontal place;
+- Left and right triggers (PS calls them L1 and R1, Xbox calls them bumpers): move camera up or down;
+- Left and right triggers #2 (PS calls them L2 and R2, on Xbox they're the pressable thumbsticks): roll camera left or right;
+- PS triangle/Xbox Y: reset roll and FOV to their default values;
+- PS X-button/Xbox B and PS O-button and Xbox-X: change FOV;
 
 Controls can be configured - more about that in `Controls configuration` section.
 
@@ -87,7 +96,7 @@ Controls can be configured - more about that in `Controls configuration` section
 
 ## Screenshotting
 
-You can use this mod to take transparent or non-transparent screenshots of the game using `screenshotBtn` key combination (F8 by default - can be configured). To configure hotkeys, read `Controls configuration`.
+You can use this mod to take transparent or non-transparent screenshots of the game using `screenshotBtn` key combination (F8 by default). To configure hotkeys, read `Controls configuration`.
 
 ### Setting up the game to enable transparent screenshots
 
@@ -96,7 +105,7 @@ To enable screenshots taken to be with transparent background, you need to go in
 ![Screenshot can't be viewed](posteffect_off.jpg)
 
 Post-Effect set to Off seems to turn off anti-aliasing, but without it the trick won't work. Then you can load the mod and switch the `blackBackgroundToggle` (F2 is the default hotkey) to make the background black and that would actually make the background transparent - but you can't see that with a naked eye. You need to press "screenshotBtn" (F8, copies to clipboard by default) to take a screenshot and paste it into a graphical editor supporting transparency, like GIMP for example, in order to see transparency.  
-Transparency in the game is actually inverted, meaning the background is fully opaque while the characters are fully transparent. The screenshotter inverts the alpha channel to make it correct.  
+Transparency in the game is actually inverted, meaning the background is fully opaque while the characters are (almost) fully transparent. The screenshotter inverts the alpha channel to make it correct. Some parts of the characters might still remain at about 230-254 alpha instead of 255, though, so watch out.  
 Only GIMP has been tested to support the PNG screenshot format that the mod produces, and this works on Windows and on Ubuntu/Linux, where Guilty Gear Xrd runs under Steam Proton.
 
 To turn off `Post-Effect` automatically whenever you make the background black, you could set the `turnOffPostEffectWhenMakingBackgroundBlack` setting in the INI file to true (is true by default). Or, alternatively, you could use the `togglePostEffectsOnOff` keyboard shortcut, which is set in the INI file, to turn the Post-Effect on or off manually using a hotkey (the default hotkey is not set). Turning Post-Effect on/off this way does not require reloading the match! This is much faster than going to the main menu and changing it there!
@@ -189,7 +198,7 @@ The tools provided in <https://github.com/kkots/GIFTools> allow renumbering PNG 
 ## Controls configuration
 
 If you wish to configure key and/or mouse combinations for the controls, create a text file named `ggxrd_freecam.ini` and place it in the directory where the game executable is. For example, for me my Steam version of the game is located at `...\SteamLibrary\steamapps\common\GUILTY GEAR Xrd -REVELATOR-\Binaries\Win32`.  
-Please note that keyboard controls don't work well in Japanese IME Hiragana or even plain English mode and possible in other languages (for example, pressing "1" when in Japanese Hiragana, then it doesn't work at all in Japanese English). So please use keyboard controls only with the plain English language.  
+Please note that keyboard controls don't work well in Japanese IME Hiragana or even plain English mode and possibly in other languages (for example, pressing "1" when in Japanese Hiragana, then it doesn't work at all in Japanese English). So please use keyboard controls only with the plain English language.  
 Here's an example of the `.ini` file:
 
 ```ini
@@ -197,7 +206,7 @@ Here's an example of the `.ini` file:
 ; For example it could be C:\Something\SteamLibrary\steamapps\common\GUILTY GEAR Xrd -REVELATOR-\Binaries\Win32
 ; You don't need to reload the mod when you change this file - it re-reads this settings file automatically when it changes.
 ; Available keys:
-; Backspace, Tab, Enter, PauseBreak, CapsLock, Escape, Space, PageUp, PageDown, End, Home, ArrowLeft, ArrowUp, ArrowRight, ArrowDown, PrintScreen, Insert Delete, Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9, NumMultiply, NumAdd, NumSubtract, NumDecimal, NumDivide, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, NumLock, ScrollLock, Colon, Plus, Minus, Comma, Period, Slash, Tilde, OpenSquareBracket, Backslash, CloseSquareBracket, Quote, Backslash2, LeftClick, RightClick, MiddleClick, MouseMoveLeft, MouseMoveUp, MouseMoveRight, MouseMoveDown, MouseWheelUp, MouseWheelDown, 0123456789, ABCDEFGHIJKLMNOPQRSTUVWXYZ, Shift, Ctrl, Alt
+; Backspace, Tab, Enter, PauseBreak, CapsLock, Escape, Space, PageUp, PageDown, End, Home, ArrowLeft, ArrowUp, ArrowRight, ArrowDown, PrintScreen, Insert Delete, Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9, NumMultiply, NumAdd, NumSubtract, NumDecimal, NumDivide, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, NumLock, ScrollLock, Colon, Plus, Minus, Comma, Period, Slash, Tilde, OpenSquareBracket, Backslash, CloseSquareBracket, Quote, Backslash2, LeftClick, RightClick, MiddleClick, ThumbMouseClick, ThumbMouseClick2, MouseMoveLeft, MouseMoveUp, MouseMoveRight, MouseMoveDown, MouseWheelUp, MouseWheelDown, 0123456789, ABCDEFGHIJKLMNOPQRSTUVWXYZ, Shift, Ctrl, Alt, JoystickBtn1, JoystickBtn2, JoystickBtn3, JoystickBtn4, JoystickLeftTrigger, JoystickRightTrigger, JoystickLeftTrigger2, JoystickRightTrigger2, JoystickBtn9, JoystickBtn10, JoystickBtn11, JoystickBtn12, JoystickBtn13, JoystickBtn14, JoystickBtn15, JoystickBtn16, LeftStickLeft, LeftStickUp, LeftStickRight, LeftStickDown, DPadLeft, DPadUp, DPadRight, DPadDown, PS4DualshockLeftShoulderPressure, PS4DualshockRightShoulderPressure, PS4DualshockRightStickLeft, PS4DualshockRightStickUp, PS4DualshockRightStickRight, PS4DualshockRightStickDown, XboxTypeSRightStickLeft, XboxTypeSRightStickUp, XboxTypeSRightStickRight, XboxTypeSRightStickDown
 ; You can specify key and key + mouse combinations by separating key names with the '+' sign.
 ; You can assign same key to multiple features - it will toggle/set in motion all of them simultaneously.
 
@@ -209,13 +218,19 @@ toggleFreecamButLeaveLocked = RightClick
 
 ; Moves camera across space
 moveCameraForward = T
+moveCameraForward = DPadUp
 moveCameraBackwards = G
+moveCameraBackwards = DPadDown
 moveCameraLeft = F
+moveCameraLeft = DPadLeft
 moveCameraRight = H
+moveCameraRight = DPadRight
 moveCameraUp = V
 moveCameraUp = B
 moveCameraUp = N
+moveCameraUp = JoystickLeftTrigger
 moveCameraDown = Space
+moveCameraDown = JoystickRightTrigger
 
 ; Rotates camera up/down/left/right
 lookUp = MouseMoveUp
@@ -223,16 +238,36 @@ lookDown = MouseMoveDown
 lookRight = MouseMoveRight
 lookLeft = MouseMoveLeft
 
+lookUp = LeftStickUp
+lookDown = LeftStickDown
+lookRight = LeftStickRight
+lookLeft = LeftStickLeft
+leftStickDeadzone = 1536
+
+; This is deadzone for PS4DualshockRightStickLeft, PS4DualshockRightStickUp, PS4DualshockRightStickRight, PS4DualshockRightStickDown.
+; The value that we read from the controller will lie in range [0;65535], where 32767 is the middle, but the stick is usually
+; resting at an offset from that.
+; Deadzone of 1536 means we ignore the values in the range [31231;34303] and treat them as 32767
+ps4DualshockRightStickDeadzone = 1536
+
+; This is deadzone for XboxTypeSRightStickLeft, XboxTypeSRightStickUp, XboxTypeSRightStickRight, XboxTypeSRightStickDown
+xboxTypeSRightStickDeadzone = 1536
+
 ; Rolls camera left or right (think Lean in FPS games)
 rollRight = PageDown
+rollRight = JoystickRightTrigger2
 rollLeft = PageUp
+rollLeft = JoystickLeftTrigger2
 
 ; Resets roll back and FOV to their default values
 resetRoll = Home
+resetRoll = JoystickBtn4  ; on PS this is triangle, on Xbox this is Y
 
 ; Increase/decrease field of view. The smaller the FOV, the bigger everything is
 fovDecrease = MouseWheelUp
+fovDecrease = JoystickBtn2  ; on PS this is X, on Xbox this is B
 fovIncrease = MouseWheelDown
+fovIncrease = JoystickBtn3  ; on PS this is O, on Xbox this is X
 
 ; Hide/show HUD
 toggleHud = F1
@@ -339,7 +374,7 @@ togglePostEffectOnOff =
 ```
 
 You can specify a combination of keys and/or mouse buttons, separated by `+` sign. ; You can assign same key to multiple features - it will toggle/set in motion all of them simultaneously.  
-Only the following key names are allowed: Backspace, Tab, Enter, PauseBreak, CapsLock, Escape, Space, PageUp, PageDown, End, Home, ArrowLeft, ArrowUp, ArrowRight, ArrowDown, PrintScreen, Insert Delete, Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9, NumMultiply, NumAdd, NumSubtract, NumDecimal, NumDivide, F1, F2, F3, F4, F, F6, F7, F8, F9, F10, F11, F12, NumLock, ScrollLock, Colon, Plus, Minus, Comma, Period, Slash, Tilde, OpenSquareBracket, Backslash, CloseSquareBracket, Quote, Backslash2, LeftClick, RightClick, MiddleClick, MouseMoveLeft, MouseMoveUp, MouseMoveRight, MouseMoveDown, MouseWheelUp, MouseWheelDown, 0123456789, ABCDEFGHIJKLMNOPQRSTUVWXYZ, Shift, Ctrl, Alt.  
+Only the following key names are allowed: Backspace, Tab, Enter, PauseBreak, CapsLock, Escape, Space, PageUp, PageDown, End, Home, ArrowLeft, ArrowUp, ArrowRight, ArrowDown, PrintScreen, Insert Delete, Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9, NumMultiply, NumAdd, NumSubtract, NumDecimal, NumDivide, F1, F2, F3, F4, F, F6, F7, F8, F9, F10, F11, F12, NumLock, ScrollLock, Colon, Plus, Minus, Comma, Period, Slash, Tilde, OpenSquareBracket, Backslash, CloseSquareBracket, Quote, Backslash2, LeftClick, RightClick, MiddleClick, ThumbMouseClick, ThumbMouseClick2, MouseMoveLeft, MouseMoveUp, MouseMoveRight, MouseMoveDown, MouseWheelUp, MouseWheelDown, 0123456789, ABCDEFGHIJKLMNOPQRSTUVWXYZ, Shift, Ctrl, Alt, JoystickBtn1, JoystickBtn2, JoystickBtn3, JoystickBtn4, JoystickLeftTrigger, JoystickRightTrigger, JoystickLeftTrigger2, JoystickRightTrigger2, JoystickBtn9, JoystickBtn10, JoystickBtn11, JoystickBtn12, JoystickBtn13, JoystickBtn14, JoystickBtn15, JoystickBtn16, LeftStickLeft, LeftStickUp, LeftStickRight, LeftStickDown, DPadLeft, DPadUp, DPadRight, DPadDown, PS4DualshockLeftShoulderPressure, PS4DualshockRightShoulderPressure, PS4DualshockRightStickLeft, PS4DualshockRightStickUp, PS4DualshockRightStickRight, PS4DualshockRightStickDown, XboxTypeSRightStickLeft, XboxTypeSRightStickUp, XboxTypeSRightStickRight, XboxTypeSRightStickDown.  
 You don't need to reload the mod when you change this file - it re-reads this settings file automatically when it changes.
 
 ## Build instructions
@@ -396,3 +431,4 @@ After setting UNICODE support correctly and adding dependencies you can build th
 - 21'st November 2023 - added reverse chroma key to the transparent screenshotting, so that pixels that have non-black color but 0 alpha still get some alpha.
 - 24'th November 2023 - fixed crash when changing resolutions while the mod is loaded.
 - 21'st January 2024 - fixed a mistake in one of the field names in the example .ini
+- 23'rd January 2025 - added gamepad controls

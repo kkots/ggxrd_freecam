@@ -2,9 +2,9 @@
 #include "MultiplicationTable.h"
 
 MultiplicationTable::MultiplicationTable() {
-	data.resize(3);
+	data.resize(MULTIPLICATION_WHAT_LAST);
 	for (std::vector<float>& vec : data) {
-		vec.insert(vec.begin(), 4, 1.F);
+		vec.insert(vec.begin(), MULTIPLICATION_GOAL_LAST, 1.F);
 	}
 }
 

@@ -119,9 +119,9 @@ void Camera::updateCameraManually(CameraMoveInputs& inputs) {
 
 	cam->roll += (int)inputs.rollRightSpeed - (int)inputs.rollLeftSpeed;
 
-	cam->fov += (int)inputs.increaseFovSpeed - (int)inputs.decreaseFovSpeed;
-	if (cam->fov > 179) cam->fov = 179;
-	if (cam->fov < 1) cam->fov = 1;
+	cam->fov += inputs.increaseFovSpeed - inputs.decreaseFovSpeed;
+	if (cam->fov > 179.F) cam->fov = 179.F;
+	if (cam->fov < 1.F) cam->fov = 1.F;
 
 	if (inputs.needResetRollFov) {
 		cam->roll = 0;
