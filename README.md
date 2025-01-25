@@ -7,7 +7,7 @@
 Allows to move camera freely in Guilty Gear Xrd Rev2 version 2211 (as of 21'st January 2024).  
 Also allows to play the game one frame at a time (only in training mode).  
 Also allows to take screenshots of the game with transparency.  
-No controller support (I don't own a controller).
+Has controller support (I have a PS4 Dualshock).
 
 ## Credits
 
