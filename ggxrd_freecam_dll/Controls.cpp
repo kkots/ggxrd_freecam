@@ -317,7 +317,7 @@ void Controls::ProcessInputsHook(BYTE* thisArg, float DeltaTime) {
 		--ArrayNum;
 	}
 	
-	if (ArrayNum == 0) {
+	if (ArrayNum == -1) {
 		std::unique_lock<std::mutex> guard(inputDataMutex);
 		inputData.leftStickX = 32767;
 		inputData.leftStickY = 32767;
