@@ -110,6 +110,13 @@ Only GIMP has been tested to support the PNG screenshot format that the mod prod
 
 To turn off `Post-Effect` automatically whenever you make the background black, you could set the `turnOffPostEffectWhenMakingBackgroundBlack` setting in the INI file to true (is true by default). Or, alternatively, you could use the `togglePostEffectsOnOff` keyboard shortcut, which is set in the INI file, to turn the Post-Effect on or off manually using a hotkey (the default hotkey is not set). Turning Post-Effect on/off this way does not require reloading the match! This is much faster than going to the main menu and changing it there!
 
+### Hiding one of the players or the particle effects
+
+You can use the `hideOneOfTheSidesToggle` key shortcut to toggle hiding either P1 or P2 side entities (the player and their projectiles).  
+`sideToHide` setting (a number: 0 or 1) specifies which side to hide: 0 for P1 side, 1 for P2 side.  
+`allowCreateParticles` setting (true/false) specifies whether particle creation is enabled. Preventing particles from being created is effectively hiding like them.  
+`toggleAllowCreateParticles` key shortcut, which can be used to toggle `allowCreateParticles`.
+
 ### Screenshot saving location
 
 By default the mod saves the screenshot into clipboard buffer, meaning you can paste it afterwards into a graphics program which supports transparency. In order to save screenshots to a file or directory you can add the `ggxrd_freecam.ini` file into the same folder as the game executable (if it is not present there, it will be read from the folder where ggxrd_freecam_dll.dll was when you injected it) and write the path into the `screenshotPath` setting in it, without quotes. Now when you save multiple screenshots in a row, each consecutive one will get a number in its name, increasing from 1 to infinity. Screenshots are never cleaned up, so if you never clean them up yourself, you might fill up your hard drive.  
@@ -277,7 +284,8 @@ toggleHud = F1
 ; Make background black (and transparent - see screenshotBtn)
 blackBackgroundToggle = F2
 
-; Hide all entities belonging to one of the fighting sides. This can't hide the tension/burst lightning.
+; A key shortcut.
+; When pressed, hides all entities belonging to one of the fighting sides. This can't hide the tension/burst lightning.
 ; You can specify which exact side to hide using the sideToHide setting.
 ; Everyone and everything also become invulnerable to all attacks
 hideOneOfTheSidesToggle = 
