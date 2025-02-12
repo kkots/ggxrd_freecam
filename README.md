@@ -373,6 +373,20 @@ turnOffPostEffectWhenMakingBackgroundBlack = true
 ; turned off automatically, and when you leave those modes, it gets turned back on.
 togglePostEffectOnOff =
 
+; When this option is enabled, particle effects such as superfreeze flash, can be created.
+; Turning this option on or off does not remove particles that have already been created,
+; or make appear those particles which have already not been created.
+; You can use the \"toggleAllowCreateParticles\" shortcut to toggle this option.
+allowCreateParticles = true
+
+; A keyboard shortcut to disable/enable creation of particle effects.
+; If allowCreateParticles is set to false, then this toggle will first enable, then disable
+; creation of particles, and so on.
+; If allowCreateParticles is true, then this will first disable, then enable, and so on.
+; Using the toggle does not hide particles that have already been created or make appear
+; particles that have already been created
+toggleAllowCreateParticles = 
+
 ```
 
 You can specify a combination of keys and/or mouse buttons, separated by `+` sign. ; You can assign same key to multiple features - it will toggle/set in motion all of them simultaneously.  

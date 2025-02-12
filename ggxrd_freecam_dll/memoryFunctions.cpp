@@ -62,14 +62,7 @@ uintptr_t sigscan(const char* name, const char* sig, size_t sigLength)
 	return 0;
 }
 
-uintptr_t sigscan(const char* name, const char* sig, const char* mask)
-{
-	uintptr_t start, end;
-	if (!getModuleBounds(name, &start, &end)) {
-		logwrap(fputs("Module not loaded\n", logfile));
-		return 0;
-	}
-
+uintptr_t sigscan(uintptr_t start, uintptr_t end, const char* sig, const char* mask) {
 	const auto lastScan = end - strlen(mask) + 1;
 	for (auto addr = start; addr < lastScan; addr++) {
 		for (size_t i = 0;; i++) {
@@ -79,6 +72,20 @@ uintptr_t sigscan(const char* name, const char* sig, const char* mask)
 				break;
 		}
 	}
+	
+	return 0;
+}
+
+uintptr_t sigscan(const char* name, const char* sig, const char* mask)
+{
+	uintptr_t start, end;
+	if (!getModuleBounds(name, &start, &end)) {
+		logwrap(fputs("Module not loaded\n", logfile));
+		return 0;
+	}
+
+	uintptr_t result = sigscan(start, end, sig, mask);
+	if (result != 0) return result;
 
 	logwrap(fputs("Sigscan failed\n", logfile));
 	return 0;
@@ -229,4 +236,8 @@ void substituteWildcard(char* mask, char* sig, char* sourceBuffer, size_t size, 
 		++sourcePtr;
 		++maskPtr;
 	}
+}
+
+uintptr_t sigscanForward(uintptr_t ptr, const char* sig, const char* mask, size_t searchLimit) {
+	return sigscan(ptr, ptr + searchLimit, sig, mask);
 }

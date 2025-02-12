@@ -9,6 +9,8 @@
 using EndScene_t = HRESULT(__stdcall*)(IDirect3DDevice9*);
 using Present_t = HRESULT(__stdcall*)(IDirect3DDevice9*, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion);
 using Reset_t = HRESULT(__stdcall*)(IDirect3DDevice9*, D3DPRESENT_PARAMETERS* pPresentationParameters);
+using BBScr_createParticleWithArg_t = void(__thiscall*)(void* pawn, const char* animName, unsigned int posType);
+using BBScr_linkParticle_t = void(__thiscall*)(void* pawn, const char* name);
 
 HRESULT __stdcall hook_Reset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters);
 HRESULT __stdcall hook_EndScene(IDirect3DDevice9* device);
@@ -35,7 +37,33 @@ public:
 	Reset_t orig_Reset = nullptr;
 	std::mutex orig_ResetMutex;
 	bool modDisabled = false;
+	
+	BBScr_createParticleWithArg_t orig_BBScr_createParticleWithArg = nullptr;
+	std::mutex orig_BBScr_createParticleWithArgMutex;
+	bool orig_BBScr_createParticleWithArgMutexLocked = false;
+	BBScr_linkParticle_t orig_BBScr_linkParticle = nullptr;
+	std::mutex orig_BBScr_linkParticleMutex;
+	bool orig_BBScr_linkParticleMutexLocked = false;
+	BBScr_linkParticle_t orig_BBScr_linkParticleWithArg2 = nullptr;
+	std::mutex orig_BBScr_linkParticleWithArg2Mutex;
+	bool orig_BBScr_linkParticleWithArg2MutexLocked = false;
+	
+	bool allowCreateParticlesBase = true;
+	bool allowCreateParticlesToggle = false;
+	inline bool allowCreateParticles() const {
+		return allowCreateParticlesBase ^ allowCreateParticlesToggle;
+	}
 private:
+	class HookHelp {
+		friend class EndScene;
+		void BBScr_createParticleWithArgHook(const char* animName, unsigned int posType);
+		void BBScr_linkParticleHook(const char* name);
+		void BBScr_linkParticleWithArg2Hook(const char* name);
+	};
+	void BBScr_createParticleWithArgHook(void* pawn, const char* animName, unsigned int posType);
+	void BBScr_linkParticleHook(void* pawn, const char* name);
+	void BBScr_linkParticleWithArg2Hook(void* pawn, const char* name);
+
 	struct HiddenEntity {
 		char* ent = nullptr;
 		int scaleX = 0;

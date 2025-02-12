@@ -74,6 +74,7 @@ public:
 	KeyComboSet slowmoGameToggle;
 	KeyComboSet allowNextFrameKey;
 	KeyComboSet togglePostEffectOnOff;
+	KeyComboSet toggleAllowCreateParticles;
 	float lookaroundSpeedMultiplier = 1.F;
 	float movementSpeedMultiplier = 1.F;
 	float rollMultiplier = 1.F;
@@ -91,6 +92,7 @@ public:
 	bool allowContinuousScreenshotting = false;
 	bool dontUseScreenshotTransparency = false;
 	bool turnOffPostEffectWhenMakingBackgroundBlack = true;
+	bool allowCreateParticles = true;
 	int sideToHide = 0;
 
 	MultiplicationTable table;

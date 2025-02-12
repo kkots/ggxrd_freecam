@@ -5,6 +5,8 @@ bool getModuleBounds(const char* name, uintptr_t* start, uintptr_t* end);
 
 bool getModuleBoundsHandle(HMODULE hModule, uintptr_t* start, uintptr_t* end);
 
+uintptr_t sigscan(uintptr_t start, uintptr_t end, const char* sig, const char* mask);
+
 uintptr_t sigscan(const char* name, const char* sig, size_t sigLength);
 
 uintptr_t sigscan(const char* name, const char* sig, const char* mask);
@@ -26,3 +28,5 @@ int calculateRelativeCallOffset(uintptr_t relativeCallAddr, uintptr_t destinatio
 char* findWildcard(char* mask, unsigned int indexOfWildcard = 0);
 
 void substituteWildcard(char* mask, char* sig, char* sourceBuffer, size_t size, unsigned int indexOfWildcard = 0);
+
+uintptr_t sigscanForward(uintptr_t ptr, const char* sig, const char* mask, size_t searchLimit = 1000);

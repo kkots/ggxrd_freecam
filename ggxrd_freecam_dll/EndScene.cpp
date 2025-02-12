@@ -43,7 +43,41 @@ bool EndScene::onDllMain() {
 
 	inputData.keyInputs.reserve(10);
 	tempPressedKeys.reserve(10);
-
+	
+	uintptr_t bbscrJumptable = sigscanOffset(
+		"GuiltyGearXrd.exe",
+		"\x83\x00\x04\x85\x00\x74\x07\x83\x00\x28\x74\x02\x8b\x00\x81\x00\x88\x09\x00\x00\x0f\x87\x00\x00\x00\x00\xff\x24",
+		"x?xx?xxx?xxxx?x?xxxxxx????xx",
+		{ 29, 0 },
+		&error, "bbscrJumptable");
+	
+	#define digUpBBScrFunction(type, name, index) \
+		uintptr_t name##CallPlace = 0; \
+		uintptr_t name##Call = 0; \
+		if (bbscrJumptable) { \
+			name##CallPlace = *(uintptr_t*)(bbscrJumptable + index*4); \
+		} \
+		if (name##CallPlace) { \
+			name##Call = sigscanForward(name##CallPlace, "\xe8", "x"); \
+		} \
+		if (name##Call) { \
+			name = (type)followRelativeCall(name##Call); \
+		}
+		
+	#define digUpBBScrFunctionAndHook(type, name, index, signature_in_parentheses, mutexPtr) \
+		digUpBBScrFunction(type, orig_##name, index) \
+		if (orig_##name) { \
+			void (HookHelp::*name##HookPtr)signature_in_parentheses = &HookHelp::name##Hook; \
+			if (!detouring.attach(&(PVOID&)orig_##name, \
+				(PVOID&)name##HookPtr, \
+				mutexPtr, \
+				#name)) return false; \
+		}
+		
+	digUpBBScrFunctionAndHook(BBScr_createParticleWithArg_t, BBScr_createParticleWithArg, 449, (const char*, unsigned int), &orig_BBScr_createParticleWithArgMutex)
+	digUpBBScrFunctionAndHook(BBScr_linkParticle_t, BBScr_linkParticle, 450, (const char*), &orig_BBScr_linkParticleMutex)
+	digUpBBScrFunctionAndHook(BBScr_linkParticle_t, BBScr_linkParticleWithArg2, 1923, (const char*), &orig_BBScr_linkParticleWithArg2Mutex)
+	
 	return !error;
 }
 
@@ -358,6 +392,15 @@ bool EndScene::endSceneOnlyProcessKeys() {
 			logwrap(fputs("Post Effect turned off\n", logfile));
 		}
 	}
+	if (!modDisabled && keyboard.combinationGotPressed(settings.toggleAllowCreateParticles)) {
+		allowCreateParticlesToggle = !allowCreateParticlesToggle;
+		if (allowCreateParticlesToggle) {
+			logwrap(fputs("Allow create particles toggle on\n", logfile));
+		}
+		else {
+			logwrap(fputs("Allow create particles toggle off\n", logfile));
+		}
+	}
 	if (!modDisabled && keyboard.combinationGotPressed(settings.hideOneOfTheSidesToggle)) {
 		if (hideOpponent) {
 			hideOpponent = false;
@@ -629,4 +672,88 @@ void EndScene::onGifModeBlackBackgroundChanged() {
 			game.postEffectOn() = true;
 		}
 	}
+}
+
+void EndScene::HookHelp::BBScr_createParticleWithArgHook(const char* animName, unsigned int posType) {
+	endScene.BBScr_createParticleWithArgHook((void*)this, animName, posType);
+}
+
+void EndScene::HookHelp::BBScr_linkParticleHook(const char* name) {
+	endScene.BBScr_linkParticleHook((void*)this, name);
+}
+
+void EndScene::HookHelp::BBScr_linkParticleWithArg2Hook(const char* name) {
+	endScene.BBScr_linkParticleWithArg2Hook((void*)this, name);
+}
+
+void EndScene::BBScr_createParticleWithArgHook(void* pawn, const char* animName, unsigned int posType) {
+	if (!modDisabled && !allowCreateParticles()) return;
+	
+	std::unique_lock<std::mutex> guard;
+	if (orig_BBScr_linkParticleWithArg2MutexLocked || orig_BBScr_linkParticleMutexLocked) {
+		// do nothing
+	} else if (!orig_BBScr_createParticleWithArgMutexLocked) {
+		orig_BBScr_createParticleWithArgMutexLocked = true;
+		guard = std::unique_lock<std::mutex>(orig_BBScr_createParticleWithArgMutex);
+	}
+	orig_BBScr_createParticleWithArg(pawn, animName, posType);
+}
+
+void EndScene::BBScr_linkParticleHook(void* pawn, const char* name) {
+	if (!modDisabled && !allowCreateParticles()) return;
+	
+	std::unique_lock<std::mutex> guardLvl1;
+	std::unique_lock<std::mutex> guard;
+	if (orig_BBScr_linkParticleWithArg2MutexLocked) {
+		// do nothing
+	} else if (!orig_BBScr_linkParticleMutexLocked) {
+		if (!orig_BBScr_createParticleWithArgMutexLocked) {
+			orig_BBScr_createParticleWithArgMutexLocked = true;
+			guardLvl1 = std::unique_lock<std::mutex>(orig_BBScr_createParticleWithArgMutex);
+		}
+		orig_BBScr_linkParticleMutexLocked = true;
+		guard = std::unique_lock<std::mutex>(orig_BBScr_linkParticleMutex);
+	}
+	orig_BBScr_linkParticle(pawn, name);
+}
+
+void EndScene::BBScr_linkParticleWithArg2Hook(void* pawn, const char* name) {
+	if (!modDisabled && !allowCreateParticles()) return;
+	
+	// three locks?? Well, the Detouring.cpp has a function detouring.attach that we fed our 3 mutexes into.
+	// When it is time to uninject, it would lock those in order.
+	// If somewhere during the execution of linkParticleWithArg2 we happen to want to call createParticleWithArg,
+	// it would lock its mutex as well, which means we could potentially end up locking the mutex for
+	// linkParticleWithArg2 and then the mutex for createParticleWithArg.
+	// If two threads, A and B, lock the mutexes in different orders, that will result in a deadlock.
+	// Example:
+	// -----------------------------
+	// Thread A      | Thread B
+	// -----------------------------
+	// locks mutex 1 | locks mutex 2
+	// executes smth | executes smth
+	// wants mutex 2 | wants mutex 1
+	// D    E    A   D   L   O  C  K
+	// You must have a defined lock hierarchy in your project, so that
+	// all mutexes that are related to each other always get locked in the same order
+	// by everyone
+	// So let's arbitrarily decide that our first lock will have to always be createParticleWithArg, followed by
+	// linkParticle, and lastly by
+	// linkParticleWithArg2
+	std::unique_lock<std::mutex> guardLvl1;
+	std::unique_lock<std::mutex> guardLvl2;
+	std::unique_lock<std::mutex> guard;
+	if (!orig_BBScr_linkParticleWithArg2MutexLocked) {
+		if (!orig_BBScr_createParticleWithArgMutexLocked) {
+			orig_BBScr_createParticleWithArgMutexLocked = true;
+			guardLvl1 = std::unique_lock<std::mutex>(orig_BBScr_createParticleWithArgMutex);
+		}
+		if (!orig_BBScr_linkParticleMutexLocked) {
+			orig_BBScr_linkParticleMutexLocked = true;
+			guardLvl2 = std::unique_lock<std::mutex>(orig_BBScr_linkParticleMutex);
+		}
+		orig_BBScr_linkParticleWithArg2MutexLocked = true;
+		guard = std::unique_lock<std::mutex>(orig_BBScr_linkParticleWithArg2Mutex);
+	}
+	orig_BBScr_linkParticleWithArg2(pawn, name);
 }

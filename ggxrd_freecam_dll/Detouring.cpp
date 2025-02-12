@@ -186,10 +186,14 @@ void Detouring::detachAllButThese(const std::vector<PVOID>& dontDetachThese) {
 
 		endTransaction();
 	}
-
-	for (std::mutex* mutexPtr : lockedMutexes) {
+	
+	size_t lockedMutexInd = lockedMutexes.size();
+	while (lockedMutexInd != 0) {
+		--lockedMutexInd;
+		std::mutex* mutexPtr = lockedMutexes[lockedMutexInd];
 		mutexPtr->unlock();
-	}
+	} while (lockedMutexInd != 0);
+	
 }
 
 bool Detouring::beginTransaction() {

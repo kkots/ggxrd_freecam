@@ -257,6 +257,7 @@ void Settings::readSettings() {
 	addKeyComboToParse(keyCombosToParse, "screenshotBtn", &screenshotBtn, "F8");
 	addKeyComboToParse(keyCombosToParse, "disableModToggle", &disableModToggle, "");
 	addKeyComboToParse(keyCombosToParse, "togglePostEffectOnOff", &togglePostEffectOnOff, "");
+	addKeyComboToParse(keyCombosToParse, "toggleAllowCreateParticles", &toggleAllowCreateParticles, "");
 
 	std::map<std::string, NumberToParse> numbersToParse;
 	addNumberToParse(numbersToParse, "lookaroundSpeedMultiplier", &lookaroundSpeedMultiplier, 1.F);
@@ -284,6 +285,7 @@ void Settings::readSettings() {
 	addBooleanToParse(booleansToParse, "allowContinuousScreenshotting", &allowContinuousScreenshotting, false);
 	addBooleanToParse(booleansToParse, "dontUseScreenshotTransparency", &dontUseScreenshotTransparency, false);
 	addBooleanToParse(booleansToParse, "turnOffPostEffectWhenMakingBackgroundBlack", &turnOffPostEffectWhenMakingBackgroundBlack, true);
+	addBooleanToParse(booleansToParse, "allowCreateParticles", &allowCreateParticles, true);
 
 	char errorString[500];
 	char buf[1024];
@@ -351,6 +353,7 @@ void Settings::readSettings() {
 		if (!firstSettingsParse && turnOffPostEffectWhenMakingBackgroundBlack) {
 			endScene.onGifModeBlackBackgroundChanged();
 		}
+		endScene.allowCreateParticlesBase = allowCreateParticles;
 	}
 
 	for (auto it = keyCombosToParse.begin(); it != keyCombosToParse.end(); ++it) {
