@@ -4,7 +4,7 @@
 
 ## Description
 
-Allows to move camera freely in Guilty Gear Xrd Rev2 version 2211 (as of 21'st January 2024).  
+Allows to move camera freely in Guilty Gear Xrd Rev2 version 2211 (as of 12'th February 2025).  
 Also allows to play the game one frame at a time (only in training mode).  
 Also allows to take screenshots of the game with transparency.  
 Has controller support (I have a PS4 Dualshock).
@@ -449,3 +449,4 @@ After setting UNICODE support correctly and adding dependencies you can build th
 - 21'st January 2024 - fixed a mistake in one of the field names in the example .ini
 - 23'rd January 2025 - added gamepad controls
 - 25'th January 2025 - now can read INI file from the folder where the mod's DLL was when you injected it, if it is not found in the game executable's folder. You can place the INI file into the game executable's folder at any time to have it be read from there again.
+- 12'th February 2025 - added a toggle to disable particle effect creation, to get cleaner screens of just the models.
