@@ -36,7 +36,7 @@
     <ClInclude Include="memoryFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WinError.h">
+    <ClInclude Include="..\common\WinError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="logging.h">
@@ -93,6 +93,12 @@
     <ClInclude Include="PngRelated.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -113,7 +119,7 @@
     <ClCompile Include="memoryFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WinError.cpp">
+    <ClCompile Include="..\common\WinError.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="logging.cpp">
@@ -162,5 +168,13 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\ggxrd_freecam.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="prebuild.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ggxrd_freecam_dll.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

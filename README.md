@@ -459,3 +459,4 @@ After setting UNICODE support correctly and adding dependencies you can build th
 - 23'rd January 2025 - added gamepad controls
 - 25'th January 2025 - now can read INI file from the folder where the mod's DLL was when you injected it, if it is not found in the game executable's folder. You can place the INI file into the game executable's folder at any time to have it be read from there again.
 - 12'th February 2025 - added a toggle to disable particle effect creation, to get cleaner screens of just the models.
+- 3'rd March 2025 - Version 2.9.1: removed command-line programs from the release zip file. The injector and the patcher are now desktop window based applications. This is done in order to make it less likely for Windows Defender to detect a Trojan:Win32/Wacatac.B!ml or a Trojan:Win32/Phonzy.B!ml. The Linux version of the patcher is still a command-line program.

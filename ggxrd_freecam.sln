@@ -5,9 +5,33 @@ VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ggxrd_freecam_dll", "ggxrd_freecam_dll\ggxrd_freecam_dll.vcxproj", "{C57B8169-7C02-4E74-80AB-4FCC48019764}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ggxrd_freecam_injector", "ggxrd_freecam_injector\ggxrd_freecam_injector.vcxproj", "{6FA2A7B9-672D-4576-A718-45661FA088A4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ggxrd_freecam_injector_console", "ggxrd_freecam_injector_console\ggxrd_freecam_injector_console.vcxproj", "{6FA2A7B9-672D-4576-A718-45661FA088A4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ggxrd_freecam_patcher", "ggxrd_freecam_patcher\ggxrd_freecam_patcher.vcxproj", "{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ggxrd_freecam_patcher_console", "ggxrd_freecam_patcher_console\ggxrd_freecam_patcher_console.vcxproj", "{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{4806DB97-CA1A-4A07-B1C6-FD35CFD44DC9}"
+	ProjectSection(SolutionItems) = preProject
+		common\ConsoleEmulator.cpp = common\ConsoleEmulator.cpp
+		common\ConsoleEmulator.h = common\ConsoleEmulator.h
+		common\ggxrd_freecam_injector_common.cpp = common\ggxrd_freecam_injector_common.cpp
+		common\ggxrd_freecam_injector_common.h = common\ggxrd_freecam_injector_common.h
+		common\ggxrd_freecam_patcher_common.cpp = common\ggxrd_freecam_patcher_common.cpp
+		common\ggxrd_freecam_patcher_common.h = common\ggxrd_freecam_patcher_common.h
+		common\InjectorCommonOut.cpp = common\InjectorCommonOut.cpp
+		common\InjectorCommonOut.h = common\InjectorCommonOut.h
+		common\prebuild.ps1 = common\prebuild.ps1
+		common\WinError.cpp = common\WinError.cpp
+		common\WinError.h = common\WinError.h
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ggxrd_freecam_injector", "ggxrd_freecam_injector\ggxrd_freecam_injector.vcxproj", "{13F2A334-E8FA-435C-889A-B872E9908C5D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ggxrd_freecam_patcher", "ggxrd_freecam_patcher\ggxrd_freecam_patcher.vcxproj", "{C5F2CFAB-2686-4048-8A0D-131297BF1672}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8DBC3C94-C2E6-467F-9A1F-E460B578968A}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,12 +41,12 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C57B8169-7C02-4E74-80AB-4FCC48019764}.Debug|x64.ActiveCfg = Debug|x64
-		{C57B8169-7C02-4E74-80AB-4FCC48019764}.Debug|x64.Build.0 = Debug|x64
+		{C57B8169-7C02-4E74-80AB-4FCC48019764}.Debug|x64.ActiveCfg = Debug|Win32
+		{C57B8169-7C02-4E74-80AB-4FCC48019764}.Debug|x64.Build.0 = Debug|Win32
 		{C57B8169-7C02-4E74-80AB-4FCC48019764}.Debug|x86.ActiveCfg = Debug|Win32
 		{C57B8169-7C02-4E74-80AB-4FCC48019764}.Debug|x86.Build.0 = Debug|Win32
-		{C57B8169-7C02-4E74-80AB-4FCC48019764}.Release|x64.ActiveCfg = Release|x64
-		{C57B8169-7C02-4E74-80AB-4FCC48019764}.Release|x64.Build.0 = Release|x64
+		{C57B8169-7C02-4E74-80AB-4FCC48019764}.Release|x64.ActiveCfg = Release|Win32
+		{C57B8169-7C02-4E74-80AB-4FCC48019764}.Release|x64.Build.0 = Release|Win32
 		{C57B8169-7C02-4E74-80AB-4FCC48019764}.Release|x86.ActiveCfg = Release|Win32
 		{C57B8169-7C02-4E74-80AB-4FCC48019764}.Release|x86.Build.0 = Release|Win32
 		{6FA2A7B9-672D-4576-A718-45661FA088A4}.Debug|x64.ActiveCfg = Debug|x64
@@ -41,6 +65,22 @@ Global
 		{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}.Release|x64.Build.0 = Release|x64
 		{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}.Release|x86.ActiveCfg = Release|Win32
 		{F7FC6D2F-0A05-4457-866F-D12862B0C8EE}.Release|x86.Build.0 = Release|Win32
+		{13F2A334-E8FA-435C-889A-B872E9908C5D}.Debug|x64.ActiveCfg = Debug|x64
+		{13F2A334-E8FA-435C-889A-B872E9908C5D}.Debug|x64.Build.0 = Debug|x64
+		{13F2A334-E8FA-435C-889A-B872E9908C5D}.Debug|x86.ActiveCfg = Debug|Win32
+		{13F2A334-E8FA-435C-889A-B872E9908C5D}.Debug|x86.Build.0 = Debug|Win32
+		{13F2A334-E8FA-435C-889A-B872E9908C5D}.Release|x64.ActiveCfg = Release|x64
+		{13F2A334-E8FA-435C-889A-B872E9908C5D}.Release|x64.Build.0 = Release|x64
+		{13F2A334-E8FA-435C-889A-B872E9908C5D}.Release|x86.ActiveCfg = Release|Win32
+		{13F2A334-E8FA-435C-889A-B872E9908C5D}.Release|x86.Build.0 = Release|Win32
+		{C5F2CFAB-2686-4048-8A0D-131297BF1672}.Debug|x64.ActiveCfg = Debug|x64
+		{C5F2CFAB-2686-4048-8A0D-131297BF1672}.Debug|x64.Build.0 = Debug|x64
+		{C5F2CFAB-2686-4048-8A0D-131297BF1672}.Debug|x86.ActiveCfg = Debug|Win32
+		{C5F2CFAB-2686-4048-8A0D-131297BF1672}.Debug|x86.Build.0 = Debug|Win32
+		{C5F2CFAB-2686-4048-8A0D-131297BF1672}.Release|x64.ActiveCfg = Release|x64
+		{C5F2CFAB-2686-4048-8A0D-131297BF1672}.Release|x64.Build.0 = Release|x64
+		{C5F2CFAB-2686-4048-8A0D-131297BF1672}.Release|x86.ActiveCfg = Release|Win32
+		{C5F2CFAB-2686-4048-8A0D-131297BF1672}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
